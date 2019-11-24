@@ -17,36 +17,71 @@ data("UCBAdmissions")
 df_ucba <- tbl_df(UCBAdmissions)
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-
-    # Application title
-    titlePanel("UC Berkeley Student Admissions"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            selectInput("dept", "Department : ", 
-                        choices=unique(df_ucba["Dept"])),
-            hr(),
-            helpText("Visual reprentation of admition by gender in the selected department")
-        ),
-        
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("barplot")
-        )
-    )
+      navbarPage("UCBAdmissions Shiny App",
+                 tabPanel("Documentation",
+                          h1("Student Admissions At UC Berkeley"),
+                          p("Welcome to the UCBAdmission Shiny App"),
+                          
+                          h2("How to use this shiny application:"),
+                          p("Navigate through the application using the navigation bar. Interact with the different visualizations using the graphical interface."),
+                          
+                          h2("About the dataset:"),
+                          h3("Details"),
+                          p("This data set is frequently used for illustrating Simpson's paradox, see Bickel et al (1975).",br(),
+                            " At issue is whether the data show evidence of sex bias in admission practices.",br(),
+                            " There were 2691 male applicants, of whom 1198 (44.5%) were admitted, compared with 1835 female applicants of whom 557 (30.4%) were admitted.",br(),
+                            " This gives a sample odds ratio of 1.83, indicating that males were almost twice as likely to be admitted.", br(),
+                            "In fact, graphical methods (as in the example below) or log-linear modelling show that the apparent association between admission and sex stems from differences in the tendency of males and females to apply to the individual departments (females used to apply more to departments with higher rejection rates).",br(),
+                            "This data set can also be used for illustrating methods for graphical display of categorical data, such as the general-purpose mosaicplot or the fourfoldplot for 2-by-2-by-k tables."),
+                          h3("Format"),
+                          p("work in progress (matrix)"),
+                          h3("References"),
+                          p("Bickel, P. J., Hammel, E. A., and O'Connell, J. W. (1975).",br(),
+                            "Sex bias in graduate admissions: Data from Berkeley. Science, 187, 398--403. http://www.jstor.org/stable/1739581.")
+                         ),
+                 
+                 tabPanel("Application",
+              
+                      # Application title
+                      titlePanel(h1("UC Berkeley Student Admissions by Gender and Department",align="center")),
+                  
+                      # Sidebar with a slider input for number of bins 
+                      sidebarLayout(
+                          sidebarPanel(
+                              selectInput("dept", "Department : ", 
+                                          choices=c("All",unique(df_ucba["Dept"]))),
+                              hr(),
+                              helpText("Visual reprentation of admissions by gender in the selected department"),
+                              width=2
+                          ),
+                          
+                  
+                          # Show a plot of the generated distribution
+                          mainPanel(
+                             plotOutput("mosaicplot")
+                          )
+                    )
+                 ),
+                tabPanel("Details",
+                         )
+          
+      )
 )
 
-# Define server logic required to draw a histogram
+# Define server logic required to draw plots
 server <- function(input, output) {
     
-    output$barplot <- renderPlot({
-        #filter the dataframe according to the input
+    output$mosaicplot <- renderPlot({
+      #filter the dataframe according to the input
+      if(input$dept=="All"){
+        ggplot(data = df_ucba) +
+          geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) + facet_grid(Gender~.)
+      }else{
           df_plot <- df_ucba %>% filter(Dept==input$dept)
          ggplot(data = df_plot) +
           geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) + facet_grid(Gender~.)
-    })
+      }
+    },width=1500,height=700)
 }
 
 # Run the application 
