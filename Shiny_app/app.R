@@ -75,11 +75,12 @@ server <- function(input, output) {
       #filter the dataframe according to the input
       if(input$dept=="All"){
         ggplot(data = df_ucba) +
-          geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) + facet_grid(Gender~.)
+          geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) + facet_grid(Gender~.) + scale_fill_manual(values=c("#56B4E9", "#D46A6A"))
+
       }else{
           df_plot <- df_ucba %>% filter(Dept==input$dept)
          ggplot(data = df_plot) +
-          geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) + facet_grid(Gender~.)
+          geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) + facet_grid(Gender~.) + scale_fill_manual(values=c("#56B4E9", "#D46A6A"))
       }
     },width=1500,height=700)
 }
