@@ -37,7 +37,7 @@ ui <- fluidPage(
                           p("work in progress (matrix)"),
                           h3("References"),
                           p("Bickel, P. J., Hammel, E. A., and O'Connell, J. W. (1975).",br(),
-                            "Sex bias in graduate admissions: Data from Berkeley. Science, 187, 398--403. http://www.jstor.org/stable/1739581.")
+                            "Sex bias in gradinstuate admissions: Data from Berkeley. Science, 187, 398--403. http://www.jstor.org/stable/1739581.")
                          ),
                  
                  tabPanel("Application",
@@ -58,12 +58,32 @@ ui <- fluidPage(
                   
                           # Show a plot of the generated distribution
                           mainPanel(
-                             plotOutput("mosaicplot")
+                             plotOutput("mosaicplot",width = "100%")
                           )
                     )
                  ),
                 tabPanel("Details",
+                         fluidRow(
+                           titlePanel(h1("Percentage of admissions by Gender",align="center")),
+                             
+                             column(4,
+                                    wellPanel(
+                                      radioButtons("gender", "Gender:",
+                                                   c("Male","Female")
+                                      ),
+                                    )       
+                             ),
+                             
+                             column(8,
+                                    plotOutput("piechart")
+                             )
+                         ),
+                         fluidRow(
+                           column(4,
+                                  h3(textOutput("text"))
+                            )
                          )
+                       )
           
       )
 )
@@ -71,18 +91,50 @@ ui <- fluidPage(
 # Define server logic required to draw plots
 server <- function(input, output) {
     
+    #create the mosaic plot
+    #the formula for the mosaic plot is the following : Gender ~ Dept + Admit | n
     output$mosaicplot <- renderPlot({
-      #filter the dataframe according to the input
+      
       if(input$dept=="All"){
         ggplot(data = df_ucba) +
-          geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) + facet_grid(Gender~.) + scale_fill_manual(values=c("#56B4E9", "#D46A6A"))
+          geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) + 
+          facet_grid(Gender~.) + 
+          scale_fill_manual(values=c("#56B4E9", "#D46A6A"))
 
       }else{
+        #filter the dataframe according to the input
           df_plot <- df_ucba %>% filter(Dept==input$dept)
          ggplot(data = df_plot) +
-          geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) + facet_grid(Gender~.) + scale_fill_manual(values=c("#56B4E9", "#D46A6A"))
+            geom_mosaic(aes(weight= n, x = product(Dept,Admit), fill=Admit)) +
+            facet_grid(Gender~.) + 
+            scale_fill_manual(values=c("#56B4E9", "#D46A6A"))
       }
-    },width=1500,height=700)
+    })
+  #create the piechart plot  
+  output$piechart <- renderPlot({
+    #filter the dataframe according to the input
+    df_ucba <- df_ucba %>% filter(Gender== input$gender)
+    #retrieve the total in a variable
+    total <- as.integer(df_ucba %>% summarise(sum(n)))
+    output$text  <- renderText({
+      paste(total, input$gender, "applicants")
+    })
+    #modify the dataframe to be used in the plot
+    #compute total percentage for aggregated data
+    df_plot <- df_ucba %>% group_by(Admit,Gender)  %>% mutate(Percent = (n/total)*100) %>% summarise(Percent = sum(Percent))
+    ggplot(df_plot, aes(x="", y=Percent, fill=Admit))+
+          geom_bar(width = 1, stat = "identity") + 
+          #transform the barplot into a pie chart
+          coord_polar("y", start=0) + 
+          #percentage labels inside the pie chart
+          geom_text(aes(label=Percent),color='white',position = position_stack(vjust = 0.5)) + 
+          #labels
+          labs(title = paste("Percentage of",input$gender,"admissions"),
+               y = "Admission percentage") +
+          #colors
+          scale_fill_manual(values=c("#56B4E9", "#D46A6A"))
+  })
+  
 }
 
 # Run the application 
