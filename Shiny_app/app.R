@@ -70,7 +70,7 @@ ui <- fluidPage(
                                     wellPanel(
                                       radioButtons("gender", "Gender:",
                                                    c("Male","Female")
-                                      ),
+                                      )
                                     )       
                              ),
                              

@@ -1,0 +1,63 @@
+---
+title: "Pitch Presentation"
+author: "Arthur LAUREAU - Igor FIDALGO"
+date: "November 26, 2019"
+output: slidy_presentation
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## 1. Introduction
+
+### **The Shiny Application project**:
+
+This project is a simple hello world project to learn how to make a **Shiny app** and a related **presentation** using **RStudio**.
+To learn more, see [our github](https://github.com/Igzs/R_shiny_pres).  
+
+## 2. Dataset summary
+
+The **UCBAdmissions** data set is frequently used for illustrating **Simpson's paradox**, see [Bickel et al (1975)](http://www.jstor.org/stable/1739581). At issue is whether the data show evidence of sex bias in admission practices.  
+
+To learn more, see Data from Berkeley. Science, 187, 398--403.
+
+The UCBAdmissions data set is 3-dimensional array resulting from cross-tabulating 4526 observations on 3 variables. The variables and their levels are as follows: 
+
+| No   |  Name  |       Levels       |
+|:----:|:------:|:------------------:|
+|   1  |  Admit | Admitted, Rejected |
+|   2  | Gender |    Male, Female    |
+|   2  |  Dept  |     A,B,C,D,E,F    |
+  
+  
+```{r UCBAdmissions}
+summary(UCBAdmissions)
+```
+
+## 3. Functionalities
+
+- Plot graphs
+- Is cool
+- Made with love
+
+## 4. Interactive Plot
+
+```{r eruptions}
+inputPanel(
+  selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20),
+  
+  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+)
+
+renderPlot({
+  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Duration (minutes)", main = "Geyser eruption duration")
+  
+  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
