@@ -23,7 +23,7 @@ ui <- fluidPage(
                           p("Welcome to the UCBAdmission Shiny App"),
                           
                           h2("How to use this shiny application:"),
-                          p("Navigate through the application using the navigation bar. Interact with the different visualizations using the graphical interface."),
+                          p("Navigate through the application using the navigation bar.",br(),"Interact with the different visualizations using the graphical interface."),
                           
                           h2("About the dataset:"),
                           h3("Details"),
@@ -31,58 +31,63 @@ ui <- fluidPage(
                             " At issue is whether the data show evidence of sex bias in admission practices.",br(),
                             " There were 2691 male applicants, of whom 1198 (44.5%) were admitted, compared with 1835 female applicants of whom 557 (30.4%) were admitted.",br(),
                             " This gives a sample odds ratio of 1.83, indicating that males were almost twice as likely to be admitted.", br(),
-                            "In fact, graphical methods (as in the example below) or log-linear modelling show that the apparent association between admission and sex stems from differences in the tendency of males and females to apply to the individual departments (females used to apply more to departments with higher rejection rates).",br(),
-                            "This data set can also be used for illustrating methods for graphical display of categorical data, such as the general-purpose mosaicplot or the fourfoldplot for 2-by-2-by-k tables."),
-                          h3("Format"),
-                          p("work in progress (matrix)"),
+                            ),
+                          h3("Data format"),
+                          p("4526 observations, 4 columns",br(),
+                            "------------------",br(),
+                            "Admit (Categorical) : Admissions status",br(),
+                            "Gender (Categorical) : Gender of the candidate",br(),
+                            "Dept (Categorical) : Department of application",br(),
+                            "Freq (Numerical) : Number of occurences"),
                           h3("References"),
                           p("Bickel, P. J., Hammel, E. A., and O'Connell, J. W. (1975).",br(),
                             "Sex bias in gradinstuate admissions: Data from Berkeley. Science, 187, 398--403. http://www.jstor.org/stable/1739581.")
                          ),
                  
                  tabPanel("Application",
-              
-                      # Application title
-                      titlePanel(h1("UC Berkeley Student Admissions by Gender and Department",align="center")),
-                  
-                      # Sidebar with a slider input for number of bins 
-                      sidebarLayout(
-                          sidebarPanel(
-                              selectInput("dept", "Department : ", 
-                                          choices=c("All",unique(df_ucba["Dept"]))),
-                              hr(),
-                              helpText("Visual reprentation of admissions by gender in the selected department"),
-                              width=2
+                          fluidRow(
+                            titlePanel(h1("Percentage of admissions by Gender",align="center")),
+                            
+                            column(4,
+                                   wellPanel(
+                                     radioButtons("gender", "Gender:",
+                                                  c("Male","Female")
+                                     )
+                                   )       
+                            ),
+                            
+                            column(8,
+                                   plotOutput("piechart")
+                            )
                           ),
-                          
-                  
-                          # Show a plot of the generated distribution
-                          mainPanel(
-                             plotOutput("mosaicplot",width = "100%")
+                          fluidRow(
+                            column(4,
+                                   h3(textOutput("text"))
+                            )
                           )
-                    )
+                      
                  ),
                 tabPanel("Details",
-                         fluidRow(
-                           titlePanel(h1("Percentage of admissions by Gender",align="center")),
-                             
-                             column(4,
-                                    wellPanel(
-                                      radioButtons("gender", "Gender:",
-                                                   c("Male","Female")
-                                      )
-                                    )       
-                             ),
-                             
-                             column(8,
-                                    plotOutput("piechart")
-                             )
-                         ),
-                         fluidRow(
-                           column(4,
-                                  h3(textOutput("text"))
-                            )
+                         # Application title
+                         titlePanel(h1("UC Berkeley Student Admissions by Gender and Department",align="center")),
+                         
+                         # Sidebar with a slider input for number of bins 
+                         sidebarLayout(
+                           sidebarPanel(
+                             selectInput("dept", "Department : ", 
+                                         choices=c("All",unique(df_ucba["Dept"]))),
+                             hr(),
+                             helpText("Visual reprentation of admissions by gender in the selected department"),
+                             width=2
+                           ),
+                           
+                           
+                           # Show a plot of the generated distribution
+                           mainPanel(
+                             plotOutput("mosaicplot",width = "100%")
+                           )
                          )
+                       
                        )
           
       )

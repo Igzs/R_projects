@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pitch Presentation</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Pitch Presentation">
+  <meta name="author" content="Arthur LAUREAU - Igor FIDALGO">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  
+  <hgroup class="auto-fadein">
+    <h1>Pitch Presentation</h1>
+    <h2>Presenting our R application</h2>
+    <p>Arthur LAUREAU - Igor FIDALGO<br/></p>
+  </hgroup>
+  
+  <article></article>  
+  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  
+  <article data-timings="">
+    <style>
+.title-slide {
+  background-color: #EDE0CF; /* #EDE0CF; ; #CA9F9D*/
+}
+</style>
+
+<h2>1. Introduction</h2>
+
+<p>The Shiny Application project:</p>
+
+<ul>
+<li>This project is a simple hello world project to learn how to make a <strong>Shiny app</strong> and a related <strong>presentation</strong> using <strong>RStudio</strong>.</li>
+<li>To learn more, see <a href="https://github.com/Igzs/R_shiny_pres">our github</a>.<br></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  
+  <hgroup>
+    <h2>2. Dataset summary</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <p>The UCBAdmissions data set is frequently used for illustrating Simpson&#39;s paradox, see <a href="http://www.jstor.org/stable/1739581">Bickel et al (1975)</a>. At issue is whether the data show evidence of sex bias in admission practices.  </p>
+
+<p>The UCBAdmissions data set is 3-dimensional array resulting from cross-tabulating 4526 observations on 3 variables. The variables and their levels are as follows: </p>
+
+<table><thead>
+<tr>
+<th align="center">No</th>
+<th align="center">Name</th>
+<th align="center">Levels</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="center">1</td>
+<td align="center">Admit</td>
+<td align="center">Admitted, Rejected</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">Gender</td>
+<td align="center">Male, Female</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">Dept</td>
+<td align="center">A,B,C,D,E,F</td>
+</tr>
+</tbody></table>
+
+<pre><code class="r">summary(UCBAdmissions)
+</code></pre>
+
+<pre><code>## Number of cases in table: 4526 
+## Number of factors: 3 
+## Test for independence of all factors:
+##  Chisq = 2000.3, df = 16, p-value = 0
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  
+  <hgroup>
+    <h2>3. Functionnalities</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <ul>
+<li>Navbar architecture
+
+<ul>
+<li>Documentation included in the app</li>
+<li>Overview and details tabs</li>
+</ul></li>
+<li>Interactive plots
+
+<ul>
+<li>Mosaic plot and pie charts reactive to different inputs</li>
+</ul></li>
+<li>Compare results
+
+<ul>
+<li>Highlight Simpson&#39;s Paradox</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  
+  <hgroup>
+    <h2>4. Example</h2>
+  </hgroup>
+  
+  <article data-timings="">
+    <pre><code class="r">library(ggplot2)
+library(ggmosaic)
+ggplot(as.data.frame(UCBAdmissions)) +
+          geom_mosaic(aes(weight= Freq, x = product(Dept,Admit), fill=Admit)) + 
+          facet_grid(Gender~.) + 
+          scale_fill_manual(values=c(&quot;#56B4E9&quot;, &quot;#D46A6A&quot;))
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-1-1.png" alt="plot of chunk unnamed-chunk-1"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+  
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='NA'>
+         1
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='2. Dataset summary'>
+         2
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='3. Functionnalities'>
+         3
+      </a>
+    </li>
+    
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='4. Example'>
+         4
+      </a>
+    </li>
+    
+    </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
