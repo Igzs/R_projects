@@ -11,6 +11,8 @@ The Shiny Application project:
 
 - This project is a simple hello world project to learn how to make a **Shiny app** and a related **presentation** using **RStudio**.
 - To learn more, see [our github](https://github.com/Igzs/R_shiny_pres).  
+- You can also test [our application](https://igzs.shinyapps.io/shiny_app/)
+- Link to the [presentation](https://rpubs.com/igz/shiny_pres)
 
 2. Dataset summary
 ========================================================
