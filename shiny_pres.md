@@ -49,14 +49,4 @@ Test for independence of all factors:
 ```
 4. Plot example
 ========================================================
-
-```r
-library(ggplot2)
-library(ggmosaic)
-ggplot(as.data.frame(UCBAdmissions)) +
-          geom_mosaic(aes(weight= Freq, x = product(Dept,Admit), fill=Admit)) + 
-          facet_grid(Gender~.) + 
-          scale_fill_manual(values=c("#56B4E9", "#D46A6A"))
-```
-
 ![plot of chunk unnamed-chunk-1](shiny_pres-figure/unnamed-chunk-1-1.png)

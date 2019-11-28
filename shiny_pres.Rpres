@@ -41,7 +41,7 @@ summary(UCBAdmissions)
 ```
 4. Plot example
 ========================================================
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, echo=FALSE}
 library(ggplot2)
 library(ggmosaic)
 ggplot(as.data.frame(UCBAdmissions)) +
