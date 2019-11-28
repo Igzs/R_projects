@@ -57,7 +57,7 @@ ui <- fluidPage(
                             ),
                             
                             column(8,
-                                   plotOutput("piechart",height = "100%")
+                                   plotOutput("piechart")
                             )
                           ),
                           fluidRow(
