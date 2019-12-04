@@ -1,0 +1,61 @@
+---
+title: "association_rules_titanic"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+
+```{r, message=FALSE}
+library(arules)
+library(arulesViz)
+library(dplyr)
+library(ggplot2)
+
+```
+## Load data
+
+```{r titanic}
+load('titanic.raw.rdata')
+```
+
+## Explore data
+
+```{r}
+head(titanic.raw)
+summary(titanic.raw)
+
+```
+
+## Create rules
+
+```{r}
+rules <- apriori(titanic.raw, 
+                 parameter = list(supp=0.1, conf=0.7),
+                 appearance = list(rhs = c('Survived=No','Survived=Yes')))
+
+```
+
+
+```{r}
+sort(rules,by="confidence", decreasing=TRUE)
+```
+
+```{r}
+topRules <- rules[1:10]
+inspect(topRules)
+plot(topRules)
+```
+
+
+```{r}
+plot(rules, method="graph")
+
+```
+
+
+
+
