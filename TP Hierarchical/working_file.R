@@ -47,3 +47,4 @@ groups.iris.sgl <-cutree(dendro.iris.sgl, k=3)
 table(iris_df$Species,groups.iris.avg)
 table(iris_df$Species,groups.iris.comp)
 table(iris_df$Species,groups.iris.sgl)
+
