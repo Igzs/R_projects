@@ -14,22 +14,62 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Exercice 1
+Download the iris dataset and import it into R.
 
 ```{r cars}
 summary(cars)
 ```
 
-## Including Plots
+## Exercice 2
+Choose randomly 40 observations of the iris dataset and store the sample dataset into sampleiris.
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
 ```
+## Exercice 3
+Calculate the euclidean distances between the flowers. Store the results in a matrix called D. (Remark: the last column of the dataset is the class labels of the flowers)
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+```
+## Exercice 4
+Calculate the euclidean distances between the flowers. Store the results in a matrix called D. (Remark: the last column of the dataset is the class labels of the flowers)
+
+```{r }
+ 
+```
+## Exercice 5
+Plot the dendrogram.
+
+```{r  }
+ 
+```
+## Exercice 6
+Calculate the euclidean distances between the flowers. Store the results in a matrix called D. (Remark: the last column of the dataset is the class labels of the flowers)
+
+```{r  }
+ 
+```
+## Exercice 7
+To cut the dendrogram and obtain a clustering use the cutree. You can choose the number of clusters you wish to obtain, or you can cut by choosing the height from the dendrogram figure. Cut the dendrogram in order to obtain 3 clusters. Store the results into vector groups.avg.
+
+```{r  }
+ 
+```
+## Exercice 8
+Visualize the cut tree using the function rect.hclust(). You can choose the colors of the rectangles too!
+
+```{r  }
+ 
+```
+## Exercice 9
+Compare the obtained results obtained with Hierarchical clustering and the real class labels of the flowers (function table()). Interpret the results.
+
+```{r  }
+ 
+```
+## Exercice 10
+Now apply the Hierarchical clustering on the iris dataset (the 150 observations). Choose 3 clusters and compare the results with the real class labels. Compare different methods of Hierarchical clustering (average, complete and single linkages).
+
+```{r  }
+ 
+```
