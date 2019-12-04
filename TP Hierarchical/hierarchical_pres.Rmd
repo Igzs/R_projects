@@ -88,6 +88,38 @@ Using the average linkage method for hierarchical clustering, we can observe tha
 
 Now apply the Hierarchical clustering on the iris dataset (the 150 observations). Choose 3 clusters and compare the results with the real class labels. Compare different methods of Hierarchical clustering (average, complete and single linkages).
 
-```{r  }
- 
+```{r, fig.width=20,fig.height=12 }
+ iris_num <- iris_df %>% select(-Species)
+
+iris_scaled <- scale(iris_num)
+D <- dist(iris_scaled)
+
+dendro.iris.avg <- hclust(D, method="average")
+dendro.iris.comp <- hclust(D, method="complete")
+dendro.iris.sgl <- hclust(D, method="single")
+
+plot(dendro.iris.avg, main="Cluster dendogram with average linkage", hang=-1, label=iris_df$Species)
+rect.hclust(dendro.iris.avg,k=3, border = c("red","blue","green"))
+
+plot(dendro.iris.comp, main="Cluster dendogram with complete linkage",hang=-1, label=iris_df$Species)
+rect.hclust(dendro.iris.comp,k=3, border = c("red","blue","green"))
+
+plot(dendro.iris.sgl, main="Cluster dendogram with single linkage",hang=-1, label=iris_df$Species)
+rect.hclust(dendro.iris.sgl,k=3, border = c("red","blue","green"))
+
+
+
+groups.iris.avg <- cutree(dendro.iris.avg, k=3)
+groups.iris.comp <- cutree(dendro.iris.comp, k=3)
+groups.iris.sgl <-cutree(dendro.iris.sgl, k=3)
+
+table(iris_df$Species,groups.iris.avg)
+table(iris_df$Species,groups.iris.comp)
+table(iris_df$Species,groups.iris.sgl)
+
 ```
+
+## Conclusion
+We can see that the single and average linkage method give us mixed clusters. They seem heavily biased by outliers values, specially for the single method where the second cluster is composed of juste one value.  
+
+The comple linkage method gives us more distinct clusters, although the third cluster is composed of two Species. From this we can conclude that complete is a more robust clustering method. 
