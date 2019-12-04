@@ -17,57 +17,75 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Exercice 1
 Download the iris dataset and import it into R.
 
-```{r cars}
-summary(cars)
+```{r iris,  message=FALSE}
+library(dplyr)
+data(iris)
+iris_df <- tbl_df(iris)
 ```
 
 ## Exercice 2
 Choose randomly 40 observations of the iris dataset and store the sample dataset into sampleiris.
 
-```{r}
+```{r sample}
+set.seed(2122019)
+sampleiris <- sample_n(iris_df,40)
+
 ```
+
 ## Exercice 3
 Calculate the euclidean distances between the flowers. Store the results in a matrix called D. (Remark: the last column of the dataset is the class labels of the flowers)
 
-```{r}
+```{r dist}
+sampleiris_num <- sampleiris %>% select(-Species)
+sampleiris_scaled <- scale(sampleiris_num)
+D <- dist(sampleiris_scaled)
 ```
+
 ## Exercice 4
-Calculate the euclidean distances between the flowers. Store the results in a matrix called D. (Remark: the last column of the dataset is the class labels of the flowers)
+Construct a dendrogram on the iris dataset using the method average. Store the result in dendro.avg.
 
 ```{r }
- 
+ dendro.avg <- hclust(D, method = "average")
 ```
+
 ## Exercice 5
 Plot the dendrogram.
 
-```{r  }
- 
+```{r}
+ plot(dendro.avg)
 ```
-## Exercice 6
-Calculate the euclidean distances between the flowers. Store the results in a matrix called D. (Remark: the last column of the dataset is the class labels of the flowers)
 
-```{r  }
- 
+## Exercice 6
+Plot again the dendrogram using the following command:
+```{r}
+ plot(dendro.avg, hang=-1, label=sampleiris$Species)
 ```
+
 ## Exercice 7
 To cut the dendrogram and obtain a clustering use the cutree. You can choose the number of clusters you wish to obtain, or you can cut by choosing the height from the dendrogram figure. Cut the dendrogram in order to obtain 3 clusters. Store the results into vector groups.avg.
 
-```{r  }
- 
+```{r}
+groups.avg <- cutree(dendro.avg, k = 3) 
 ```
+
 ## Exercice 8
 Visualize the cut tree using the function rect.hclust(). You can choose the colors of the rectangles too!
 
-```{r  }
- 
+```{r}
+ plot(dendro.avg, hang=-1, label=sampleiris$Species)
+ rect.hclust(dendro.avg,k=3, border = c("red","blue","green"))
 ```
+
 ## Exercice 9
 Compare the obtained results obtained with Hierarchical clustering and the real class labels of the flowers (function table()). Interpret the results.
 
 ```{r  }
- 
+table(sampleiris$Species,groups.avg)
 ```
+Using the average linkage method for hierarchical clustering, we can observe that the clusters are correctly separated, except for the Virginica species. 4 out of 13 observations of this group are aggregated in the Versicolor cluster. This can be explained by the similarity of the points in terms of Euclidian distance. 
+
 ## Exercice 10
+
 Now apply the Hierarchical clustering on the iris dataset (the 150 observations). Choose 3 clusters and compare the results with the real class labels. Compare different methods of Hierarchical clustering (average, complete and single linkages).
 
 ```{r  }
