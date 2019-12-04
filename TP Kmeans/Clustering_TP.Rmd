@@ -1,0 +1,177 @@
+---
+title: "TP Clustering"
+subtitle: "Data Analytics"
+author: "Igor FIDALGO"
+date: "November 28, 2019"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise 1
+Download the dataset: Ligue1 2017-2018 and import it into R. Put the argument row.names to 1.
+
+```{r}
+ligue1 <- read.csv("ligue1_17_18.csv", sep=";",header=T,row.names=1)
+```
+
+## Exercise 2
+Print the first two rows of the dataset and the total number of features in this dataset.
+```{r}
+#print the first two lines of dataframe ligue1
+head(ligue1,2)
+#total number of features
+ncol(ligue1)
+```
+
+## Exercise 3
+We will first consider a smaller dataset to easily understand the results of k-means. Create a new dataset in which you consider only Points and Yellow.cards from the original dataset. Name it pointsCards
+```{r}
+library(dplyr)
+pointCards <- ligue1 %>% select(Points, yellow.cards)
+
+```
+
+## Exercise 4
+Apply k-means on pointsCards. Chose k=2 clusters and put the number of iterations to 20. Store your results into km. (Remark: kmeans() uses a random initialization of the clusters, so the results may vary from one call to another. Use set.seed() to have reproducible outputs).
+```{r}
+set.seed(28112019)
+#run kmeans algorithms with 2 clusters and 20 iterations
+km <- kmeans(pointCards,centers=2, iter.max = 20)
+```
+
+## Exercise 5
+Print and describe what is inside km.
+```{r}
+print(km)
+
+```
+
+## Exercise 6
+What are the coordinates of the centers of the clusters (called also prototypes or centroids) ?
+```{r}
+km$centers
+
+```
+
+## Exercise 7
+Plot the data (Yellow.cards vs Points). Color the points corresponding to their cluster.
+```{r}
+plot(pointCards, col = km$cluster,xlab="Points",ylab="Yellow Cards")
+```
+
+## Exercise 8
+Add to the previous plot the clusters centroids and add the names of the observations.
+```{r}
+plot(pointCards, col = km$cluster,xlab="Points",ylab="Yellow Cards")
+points(km$centers, pch = 4, col="blue")
+```
+
+## Exercise 9
+Re-run k-means on pointsCards using 3 and 4 clusters and store the results into km3 and km4 respectively. Visualize the results like in question 7 and 8.
+```{r}
+km3 <- kmeans(pointCards,centers=3, iter.max = 20)
+#plot new clusters
+plot(pointCards, col = km3$cluster,xlab="Points",ylab="Yellow Cards")
+points(km3$centers, pch = 4, col="blue")
+
+#rerun kmeans with 3 and 4 clusters
+km4 <- kmeans(pointCards,centers=4, iter.max = 20)
+#plot new clusters
+plot(pointCards, col = km4$cluster,xlab="Points",ylab="Yellow Cards")
+points(km4$centers, pch = 4, col="blue")
+```
+
+## Exercise 10
+Visualize the “within groups sum of squares” of the k-means clustering results (use the code in the link above).
+```{r}
+mydata <- pointCards
+wss <- (nrow(mydata)-1)*sum(apply(mydata,2,var))
+for (i in 2:15) wss[i] <- sum(kmeans(mydata, centers=i)$withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters",ylab="Within groups sum of squares")
+```
+
+## Exercise 11
+Modify the code of the previous question in order to visualize the ‘between_SS / total_SS’. Interpret the results.
+```{r}
+mydata <- pointCards
+wss <- (nrow(mydata)-1)*sum(apply(mydata,2,var))
+for (i in 2:15) wss[i] <- (kmeans(mydata, centers=i)$betweenss / kmeans(mydata, centers=i)$totss)
+plot(1:15, wss, type="b", xlab="Number of Clusters",ylab="between_SS / total_SS")
+```
+
+
+The real improvement is between 1 and 2 clusters, so the best number of cluster is 2
+
+
+## Exercise 12
+Scale the dataset and transform it to a data frame again. Store the scaled dataset into ligue1_scaled.
+```{r}
+ligue1_scaled <- as.data.frame(scale(ligue1))
+
+```
+
+## Exercise 13
+Apply kmeans() on ligue1 and on ligue1_scaled using 3 clusters and 20 iterations. Store the results into km.ligue1 and km.ligue1.scaled respectively (do not forget to set a seed)
+```{r}
+set.seed(28112019)
+km.ligue1 <- kmeans(ligue1,centers=3, iter.max = 20)
+km.ligue1.scaled <- kmeans(ligue1_scaled,centers=3, iter.max = 20)
+```
+
+## Exercise 14
+How many observations there are in each cluster of km.ligue1 and km.ligue1.scaled ? (you can use table()). Do you obtain the same results when you perform kmeans() on the scaled and unscaled data?
+```{r}
+table(km.ligue1$cluster)
+table(km.ligue1.scaled$cluster)
+```
+We can see that the algorithm kmeans performs better with the scaled dataset. The within cluster sum of squares divided by the total sum of squares is higher for the scaled dataset, meaning that the clusters are more coherent.
+
+## Exercise 19
+Plot the observations.
+```{r}
+X= cbind(c(1, 1, 0, 5, 6, 4),c(4, 3, 4, 1, 2, 0))
+plot(X[,1],X[,2],xlab="X1",ylab="X2")
+
+```
+
+## Exercise 20
+Randomly assign a cluster label to each observation. You can use the sample() command in R to do this. Report the cluster labels for each observation.
+```{r}
+X = cbind(X,sample.int(2,1))
+
+```
+
+## Exercise 21
+Compute the centroid for each cluster.
+```{r}
+```
+
+## Exercise 22
+Create a function that calculates the Euclidean distance for two observations.
+```{r}
+euclidianDist <- function(X,Y){
+  sqrt((X[1]-X[2])**2+(Y[1]-Y[2])**2)
+}
+```
+
+## Exercise 23
+Assign each observation to the centroid to which it is closest, in terms of Euclidean distance. Report the cluster labels for each observation.
+```{r}
+```
+
+## Exercise 24
+Repeat 21 and 23 until the answers obtained stop changing.
+```{r}
+```
+
+## Exercise 25
+In your plot from 19, color the observations according to the cluster labels obtained.
+```{r}
+```
