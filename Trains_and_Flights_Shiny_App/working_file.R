@@ -1,6 +1,8 @@
 full_trains_df <- read.csv("datasets/full_trains.csv")
 regularite_df <- read.csv("datasets/regularite-mensuelle-tgv-aqst.csv",sep=";")
-
+flights <- read.csv('datasets/flights.csv')
+airlines <- read.csv('datasets/airlines.csv')
+airports <- read.csv('datasets/airports.csv')
 #total number of train rides carried out by year
 total_carried <- full_trains_df %>% group_by(year) %>% summarize(total = sum(total_num_trips) - sum(num_of_canceled_trains))
 View(total_carried)
