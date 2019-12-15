@@ -10,7 +10,7 @@
 library(shiny)
 
 # Define UI for application that draws a histogram
-shinyUI(navbarPage("Data Analytics Project",
+ui <- fluidPage(navbarPage("Data Analytics Project",
                    
                    #Documentation tab
                    tabPanel("Documentation",
@@ -39,8 +39,24 @@ shinyUI(navbarPage("Data Analytics Project",
                               "Comparisons can be drawn between the two dashboards to reveal interesting results "
                              )
                       
+                          ),
+                   tabPanel("SNCF dashboard",
+                            
+                              fluidRow(column(width=2,
+                                       wellPanel(
+                                         radioButtons("choice", "Choose feature to aggregate on:",
+                                                      c("Year" = "year",
+                                                        "Departure Station" = "departure_station"
+                                                        ))
+                                     )
+                              
+                                 ),
+                                column(width=8,
+                                       titlePanel(h1("Total number of carried train rides",align="center")),
+                                       plotOutput('testplot')
+                              
                           )
                       )
-
-  
+                   )
+    )
 )

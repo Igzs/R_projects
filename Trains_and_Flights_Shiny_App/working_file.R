@@ -4,15 +4,15 @@ flights <- read.csv('datasets/flights.csv')
 airlines <- read.csv('datasets/airlines.csv')
 airports <- read.csv('datasets/airports.csv')
 #total number of train rides carried out by year
-total_carried <- full_trains_df %>% group_by(year) %>% summarize(total = sum(total_num_trips) - sum(num_of_canceled_trains))
+total_carried <- full_trains_df %>% group_by(year) %>% summarize(total_carried = sum(total_num_trips) - sum(num_of_canceled_trains))
 View(total_carried)
 
 #total number of train rides delayed at departure
-total_delay_dep <- full_trains_df %>% group_by(year) %>% summarize(total = sum(num_late_at_departure))
+total_delay_dep <- full_trains_df %>% group_by(year) %>% summarize(total_delay_dep = sum(num_late_at_departure))
 View(total_delay_dep)
 
 #total number of train rides delayed at arrival
-total_delay_arr <- full_trains_df %>% group_by(year) %>% summarize(total = sum(num_arriving_late, na.rm = TRUE))
+total_delay_arr <- full_trains_df %>% group_by(year) %>% summarize(total_delay_arr = sum(num_arriving_late, na.rm = TRUE))
 View(total_delay_arr)
 
 #average number of train rides delayed at departure
@@ -40,7 +40,7 @@ avg_delay_arr_del <- full_trains_df %>% group_by(year) %>% filter(num_late_at_de
 View(avg_delay_dep_del)
 
 #total number of canceled trains by year
-total_canceled <- full_trains_df %>% group_by(year) %>% summarize(total = sum(num_of_canceled_trains))
+total_canceled <- full_trains_df %>% group_by(year) %>% summarize(total_canceled = sum(num_of_canceled_trains))
 View(total_canceled)
 
 #percentage of cancelled trains
@@ -59,3 +59,24 @@ per_causes <- full_trains_df %>% group_by(year) %>%
   
           
 View(per_causes)
+
+
+test <- melt(cbind(total_canceled,total_delay_dep,total_delay_arr), id.vars = c("year"))
+
+
+plot <- ggplot(test, aes(x=year,y=value,fill=variable)) + 
+  geom_bar(stat="identity", position="dodge") +
+  scale_y_continuous(labels = comma) +
+  labs(x="Year",y="Total")
+plot
+input=""
+input$choice = "year"
+choice = sym(input$choice)
+test_df <- full_trains_df %>% group_by(!!(choice)) %>% summarize(total = sum(total_num_trips) - sum(num_of_canceled_trains))
+print(test_df)
+ggplot(test_df,aes(x=!!(choice),y=total)) +
+  geom_bar(stat="identity") +
+  scale_y_continuous(labels = comma) +
+  scale_fill_manual(values=c("#56B4E9")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
