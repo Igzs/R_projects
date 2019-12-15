@@ -22,12 +22,14 @@ shinyServer(function(input, output) {
         # generate bins based on input$bins from ui.R
         carried_df <- full_trains_df %>% group_by(!!(choice)) %>% summarize(total = sum(total_num_trips) - sum(num_of_canceled_trains))
         ggplot(carried_df,aes(x=!!(choice),y=total)) +
-          geom_bar(stat="identity",width = 0.5,fill="dodgerblue") +
+          geom_bar(stat="identity",width = 0.8,fill="dodgerblue") +
           scale_y_continuous(labels = comma) +
           scale_fill_manual(values=c("#56B4E9")) +
           ggtitle(paste("Total number of carried train rides by",choice)) +
           theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
-                plot.title = element_text(color="black", size=24, face="bold")
+                axis.title.x=element_blank(),
+                axis.title.y=element_blank(),
+                plot.title = element_text(color="black", size=24,hjust = 0.5)
                 )
 
     })
@@ -49,13 +51,14 @@ shinyServer(function(input, output) {
       
     
       ggplot(combine_df, aes(x=!!(choice),y=value,fill=variable)) + 
-        geom_bar(stat="identity", width=0.4,position="dodge") +
+        geom_bar(stat="identity", width=0.8,position="dodge") +
         scale_y_continuous(labels = comma) +
-        labs(x=choice,y="Total") +
         ggtitle(paste("Total disruption by",choice)) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
-              plot.title = element_text(color="black", size=24, face="bold")
-              ) 
+              axis.title.x=element_blank(),
+              axis.title.y=element_blank(),
+              plot.title = element_text(color="black", size=24,hjust = 0.5)
+              )
       
       
     })

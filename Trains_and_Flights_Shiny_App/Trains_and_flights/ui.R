@@ -42,22 +42,23 @@ ui <- fluidPage(navbarPage("Data Analytics Project",
                            ),
                            tabPanel("SNCF dashboard",
                                     
-                                    fluidRow(column(width=1,
+                                    fluidRow(column(width=2,
                                                     wellPanel(
                                                       radioButtons("choice", "Choose feature to aggregate on:",
                                                                    c("Year" = "year",
                                                                      "Departure Station" = "departure_station")
                                                       )
                                                     )
-                                                )
+                                                ),
+                                             column(width=8,
+                                                    plotOutput('carried_bplot',height=600)
+                                             )
                                                     
                                     ),
-                                    column(width=8,
-                                           plotOutput('carried_bplot')
-                                           
-                                    ),
-                                    fluidRow(column(width=12),
-                                             plotOutput('multiple_bplot')
+                                    
+                  
+                                    fluidRow(column(width=8),
+                                             plotOutput('multiple_bplot',height=600)
                                     )
                                   )
                            )
