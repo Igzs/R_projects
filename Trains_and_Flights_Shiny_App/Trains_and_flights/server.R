@@ -15,11 +15,14 @@ library(ggthemes)
 library(reshape2)
 library(shinyjs)
 
+
+theme_set(theme_minimal())
+
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session) {
     full_trains_df <- read.csv("datasets/full_trains.csv")
     
-    
+
     output$select_departure_ui <- renderUI({
       selectInput("station", "Departure station : ",  choices=unique(full_trains_df["departure_station"]), 
                   selected="")
@@ -69,10 +72,10 @@ shinyServer(function(input, output,session) {
         }else{
           carried_df <- full_trains_df %>% group_by(!!(choice)) %>% summarize(total = sum(total_num_trips) - sum(num_of_canceled_trains))
         }
-        ggplot(carried_df,aes(x=!!(choice),y=total)) +
-          geom_bar(stat="identity",width = 0.5,fill="dodgerblue") +
+        ggplot(carried_df,aes(x=!!(choice),y=total),fill=!!(choice)) +
+          geom_bar(stat="identity",width = 0.5) +
           scale_y_continuous(labels = comma) +
-          scale_fill_manual(values=c("#56B4E9")) +
+          scale_fill_gradient(low = "#132B43", high = "#56B1F7") +
           ggtitle(paste("Total number of carried train rides by",choice)) +
           theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
                 axis.title.x=element_blank(),
@@ -180,11 +183,74 @@ shinyServer(function(input, output,session) {
         ggplot(melt_avg_delay,aes(x=!!(choice),y=value, group=variable, color=variable)) +
           geom_line(size=1.5) +
           labs(x="Year",y="Average number of delayed train rides") +
-          ggtitle("Average number of delayed train rides by year")
+          ggtitle("Average number of delayed train rides by year") +
+          theme(plot.title = element_text(color="black", size=24,hjust = 0.5))
       }
       
       
     })
+    
+    output$per_canceled_dchart <- renderPlot({
+      choice <- sym(input$choice)
+      if(input$is_departure){
+        #percentage of cancelled trains
+        per_canceled <- full_trains_df %>% group_by(!!(choice)) %>% filter(departure_station==input$station) %>% summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% mutate(percent = freq/total)
+      }else{
+        #percentage of cancelled trains
+        per_canceled <- full_trains_df %>% group_by(!!(choice)) %>% summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% mutate(percent = freq/total)
+      }
+      
+      ggplot(per_canceled, aes(ymax=percent, ymin=c(0, head(percent, n=-1)), xmax=4, xmin=3, fill=year)) +
+        geom_rect() +
+        coord_polar(theta="y") +
+        xlim(c(2, 4)) +
+        labs(x="Year", y="Percentage") +
+        ggtitle("Percentage of canceled trains by year") +
+        theme(plot.title = element_text(color="black", size=24,hjust = 0.5))
+      
+      
+    })
+    
+    output$per_causes_bplot <- renderPlot({
+      choice <- sym(input$choice)
+      
+      if(input$is_departure){
+        #percentage of causes
+        per_causes <- full_trains_df %>% group_by(!!(choice)) %>% 
+          filter(departure_station == input$station) %>%
+          summarize(external = mean(delay_cause_external_cause, na.rm = TRUE), 
+                    rail = mean(delay_cause_rail_infrastructure, na.rm = TRUE), 
+                    traffic = mean(delay_cause_traffic_management, na.rm = TRUE),
+                    stock = mean(delay_cause_rolling_stock, na.rm = TRUE),
+                    station = mean(delay_cause_station_management, na.rm = TRUE),
+                    travelers = mean(delay_cause_travelers, na.rm = TRUE)
+          )      }else{
+        #percentage of causes
+            per_causes <- full_trains_df %>% group_by(!!(choice)) %>% 
+              summarize(external = mean(delay_cause_external_cause, na.rm = TRUE), 
+                        rail = mean(delay_cause_rail_infrastructure, na.rm = TRUE), 
+                        traffic = mean(delay_cause_traffic_management, na.rm = TRUE),
+                        stock = mean(delay_cause_rolling_stock, na.rm = TRUE),
+                        station = mean(delay_cause_station_management, na.rm = TRUE),
+                        travelers = mean(delay_cause_travelers, na.rm = TRUE)
+              )
+      }
+      rearranged_df <- melt(per_causes, id.vars=c(choice))
+      
+      ggplot(rearranged_df, aes(x=!!(choice),y=value,fill=variable)) + 
+        geom_bar(stat="identity", width=0.5,position="stack") +
+        scale_y_continuous(labels = comma) +
+        ggtitle(paste("Percentage of delay causes by ",choice)) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
+              axis.title.x=element_blank(),
+              axis.title.y=element_blank(),
+              plot.title = element_text(color="black", size=24,hjust = 0.5)
+        )
+      
+      
+    })
+    
+    
     
     
   

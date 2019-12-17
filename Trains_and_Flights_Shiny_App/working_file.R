@@ -37,7 +37,7 @@ View(avg_delay_dep_del)
 
 #average arrival delay time of delayed trains
 avg_delay_arr_del <- full_trains_df %>% group_by(year) %>% filter(num_late_at_departure>0 & num_arriving_late>0) %>% summarize(average = mean(avg_delay_late_on_arrival))
-View(avg_delay_dep_del)
+View(avg_delay_arr_del)
 
 #total number of canceled trains by year
 total_canceled <- full_trains_df %>% group_by(year) %>% summarize(total_canceled = sum(num_of_canceled_trains))
@@ -91,9 +91,8 @@ d <- melt(per_causes, id.vars=c('year'))
 
 ggplot(d, aes(ymax=value, ymin=c(0, head(value, n=-1)), xmax=4, xmin=3, fill=variable)) +
   geom_rect() +
-  coord_polar(theta="y") + # Try to remove that to understand how the chart is built initially
-  xlim(c(2, 4)) +# Try to remove that to see how to make a pie chart
-  facet_grid(~year)
+  coord_polar(theta="y") +
+  xlim(c(2, 4)) 
 
 melt_avg_delay <- melt(cbind(avg_nb_delay_arr,avg_nb_delay_dep), id.vars = c("year"))
 

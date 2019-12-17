@@ -63,7 +63,11 @@ ui <- fluidPage(shinyjs::useShinyjs(),
                                             splitLayout(cellWidths = c("50%", "50%"), plotOutput("carried_bplot"), plotOutput("canceled_bplot"))
                                           ),
                                         plotOutput('delay_bplot'),
-                                        plotOutput('avg_delay_lplot')
+                                        fluidRow(
+                                          splitLayout(cellWidths = c("75%", "25%"),plotOutput('avg_delay_lplot'),conditionalPanel('input.choice=="year"', plotOutput('per_canceled_dchart')))
+                                        ),
+                                        plotOutput('per_causes_bplot')
+                                        
                                       )
                                     )
                                  
