@@ -53,7 +53,7 @@ ui <- fluidPage(shinyjs::useShinyjs(),
                                         uiOutput("select_departure_ui"),
                                         radioButtons("display","Choose which information to display:",
                                                      c("Overall" = "overall",
-                                                       "Delays" = "delays",
+                                                       "Delay" = "delay",
                                                        "Percentages" = "perc")),
                                         
                                         width=2
@@ -63,14 +63,29 @@ ui <- fluidPage(shinyjs::useShinyjs(),
                                       # Show a plot of the generated distribution
                                       mainPanel(
                                         
-                                          fluidRow(
-                                            splitLayout(cellWidths = c("50%", "50%"), plotOutput("carried_bplot"), plotOutput("canceled_bplot"))
+                                          
+                                          conditionalPanel('input.display=="overall"',
+                                                      fluidRow(
+                                                             splitLayout(cellWidths = c("50%", "50%"), 
+                                                                        plotOutput("carried_bplot"), 
+                                                                        plotOutput("canceled_bplot")
+                                                                        ),
+                                                             plotOutput('delay_bplot')
+                                            )
                                           ),
-                                        plotOutput('delay_bplot'),
+                                        
                                         fluidRow(
-                                          splitLayout(cellWidths = c("75%", "25%"),plotOutput('avg_delay_lplot'),conditionalPanel('input.choice=="year"', plotOutput('per_canceled_dchart')))
+                                          conditionalPanel('input.display=="delay"',
+                                                            plotOutput('avg_delay_lplot'), 
+                                                            plotOutput('avg_time_bplot')
+                                                            )
+                                          
                                         ),
-                                        plotOutput('per_causes_bplot')
+                                        conditionalPanel('input.display == "perc"',
+                                                          plotOutput('per_canceled_dchart'),
+                                                          plotOutput('per_causes_bplot')
+                                                          )
+                                        
                                         
                                       )
                                     )

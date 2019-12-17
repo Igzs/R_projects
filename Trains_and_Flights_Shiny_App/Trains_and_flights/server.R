@@ -141,7 +141,7 @@ shinyServer(function(input, output,session) {
               )
     })
     
-    output$avg_time_lplot <- renderPlot({
+    output$avg_time_bplot <- renderPlot({
       choice = sym(input$choice)
       if(input$is_departure){
         #average departure delay time of delayed trains
