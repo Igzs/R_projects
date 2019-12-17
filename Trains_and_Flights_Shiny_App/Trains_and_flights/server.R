@@ -141,7 +141,42 @@ shinyServer(function(input, output,session) {
               )
     })
     
-    
+    output$avg_time_lplot <- renderPlot({
+      choice = sym(input$choice)
+      if(input$is_departure){
+        #average departure delay time of delayed trains
+        avg_delay_dep_del <- full_trains_df %>% group_by(!!(choice)) %>% filter(num_late_at_departure>0 & num_arriving_late>0 & departure_station==input$station) %>% summarize(Departure = mean(avg_delay_late_at_departure))
+
+        #average arrival delay time of delayed trains
+        avg_delay_arr_del <- full_trains_df %>% group_by(!!(choice)) %>% filter(num_late_at_departure>0 & num_arriving_late>0 & departure_station==input$station) %>% summarize(Arrival = mean(avg_delay_late_on_arrival))
+
+      }else{
+        #average departure delay time of delayed trains
+        avg_delay_dep_del <- full_trains_df %>% 
+          group_by(!!(choice)) %>% 
+          filter(num_late_at_departure>0 & num_arriving_late>0) %>% 
+          summarize(Departure = mean(avg_delay_late_at_departure))
+        
+        #average arrival delay time of delayed trains
+        avg_delay_arr_del <- full_trains_df %>% 
+          group_by(!!(choice)) %>% 
+          filter(num_late_at_departure>0 & num_arriving_late>0) %>% 
+          summarize(Arrival = mean(avg_delay_late_on_arrival))
+        
+      }
+      
+      melt_avg_time<- melt(cbind(avg_delay_dep_del,avg_delay_arr_del), id.vars = c(choice))
+      
+      ggplot(melt_avg_time, aes(x=!!(choice),y=value,fill=variable)) + 
+        geom_bar(stat="identity", width=0.5,position="dodge") +
+        scale_y_continuous(labels = comma) +
+        ggtitle(paste("Average time of delayed train rides by",choice)) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
+              axis.title.x=element_blank(),
+              axis.title.y=element_blank(),
+              plot.title = element_text(color="black", size=24,hjust = 0.5)
+        )
+    })
     
     output$avg_delay_lplot <- renderPlot({
       choice = sym(input$choice)
@@ -170,7 +205,7 @@ shinyServer(function(input, output,session) {
       
       if(choice=="departure_station"){
         ggplot(melt_avg_delay, aes(x=!!(choice),y=value,fill=variable)) + 
-          geom_bar(stat="identity", width=0.5,position="stack") +
+          geom_bar(stat="identity", width=0.5,position="dodge") +
           scale_y_continuous(labels = comma) +
           ggtitle(paste("Average number of delayed train rides by",choice)) +
           theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),

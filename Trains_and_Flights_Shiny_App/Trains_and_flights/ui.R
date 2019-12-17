@@ -45,12 +45,16 @@ ui <- fluidPage(shinyjs::useShinyjs(),
                                     # Sidebar with a slider input for number of bins 
                                     sidebarLayout(
                                       sidebarPanel(
-                                        radioButtons("choice", "Choose feature to aggregate on:",
+                                        radioButtons("choice", "Choose which feature to aggregate on:",
                                                                  c("Year" = "year",
                                                                    "All departure Stations" = "departure_station")),
                                         hr(),
                                         checkboxInput('is_departure','Select a departure station?',value = TRUE),
                                         uiOutput("select_departure_ui"),
+                                        radioButtons("display","Choose which information to display:",
+                                                     c("Overall" = "overall",
+                                                       "Delays" = "delays",
+                                                       "Percentages" = "perc")),
                                         
                                         width=2
                                       ),
