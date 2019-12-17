@@ -21,7 +21,8 @@ theme_set(theme_minimal())
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session) {
     full_trains_df <- read.csv("datasets/full_trains.csv")
-    
+    airports <- read.csv("datasets/airports.csv")
+    flights <- read.csv("datasets/flights.csv")
 
     output$select_departure_ui <- renderUI({
       selectInput("station", "Departure station : ",  choices=unique(full_trains_df["departure_station"]), 
@@ -250,7 +251,75 @@ shinyServer(function(input, output,session) {
       
     })
     
+    # FLIGHTS
     
+    output$nb_flights_plot <- renderPlot({
+      flights_choice = sym(input$flights_choice)
+      # generate bins based on input$bins from ui.R
+      if (input$flights_choice == "AIRLINE") {
+        total_flights <-
+          flights %>% group_by(AIRLINE) %>% summarise(total = n() - sum(CANCELLED))
+      }
+      else{
+        total_flights <-
+          flights %>% group_by(ORIGIN_AIRPORT) %>% summarise(total = n() - sum(CANCELLED))
+      }
+      ggplot(total_flights, aes(x = !!(flights_choice), y = total)) +
+        geom_bar(stat = "identity",
+                 width = 0.5,
+                 fill = "dodgerblue") +
+        scale_y_continuous(labels = comma) +
+        scale_fill_manual(values = c("#56B4E9")) +
+        ggtitle(paste("Total number of flights cancelled by", input$flights_choice)) +
+        theme(
+          axis.text.x = element_text(
+            angle = 45,
+            hjust = 1,
+            size = 10
+          ),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          plot.title = element_text(
+            color = "black",
+            size = 24,
+            hjust = 0.5
+          )
+        )
+      
+    })
+    
+    output$del_flights_plot <- renderPlot({
+      flights_choice = sym(input$flights_choice)
+      # generate bins based on input$bins from ui.R
+      if (input$flights_choice == "AIRLINE") {
+        total_delayed <- flights %>% group_by(AIRLINE) %>% filter(DEPARTURE_DELAY != 0 || ARRIVAL_DELAY != 0) %>% summarize(Total_delayed = n())
+      }
+      else{
+        total_delayed <- flights %>% group_by(ORIGIN_AIRPORT) %>% filter(DEPARTURE_DELAY != 0 || ARRIVAL_DELAY != 0) %>% summarize(Total_delayed = n())
+      }
+      ggplot(total_delayed, aes(x = !!(flights_choice), y = Total_delayed)) +
+        geom_bar(stat = "identity",
+                 width = 0.5,
+                 fill = "dodgerblue") +
+        scale_y_continuous(labels = comma) +
+        scale_fill_manual(values = c("#56B4E9")) +
+        ggtitle(paste("Total number of flights cancelled by", input$flights_choice)) +
+        theme(
+          axis.text.x = element_text(
+            angle = 45,
+            hjust = 1,
+            size = 10
+          ),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          plot.title = element_text(
+            color = "black",
+            size = 24,
+            hjust = 0.5
+          )
+        )
+      
+    })
     
     
   

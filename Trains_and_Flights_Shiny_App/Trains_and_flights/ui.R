@@ -71,6 +71,27 @@ ui <- fluidPage(shinyjs::useShinyjs(),
                                       )
                                     )
                                  
-                           )
+                           ),
+                           tabPanel("Flights dashboard",
+                                    # Sidebar with a slider input for number of bins
+                                    sidebarLayout(
+                                      sidebarPanel(
+                                        radioButtons(
+                                          "flights_choice",
+                                          "Choose feature to aggregate on:",
+                                          c("Airline" = "AIRLINE",
+                                            "Airports" = "ORIGIN_AIRPORT")
+                                        ),
+                                        hr(),
+                                        width = 2
+                                      ),
+                                      
+                                      # Show a plot of the generated distribution
+                                      mainPanel(
+                                        plotOutput('nb_flights_plot'),
+                                        plotOutput('del_flights_plot')
+                                        
+                                      )
+                                    ))
               )
 )
