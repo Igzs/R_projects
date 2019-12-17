@@ -16,11 +16,11 @@ total_delay_arr <- full_trains_df %>% group_by(year) %>% summarize(total_delay_a
 View(total_delay_arr)
 
 #average number of train rides delayed at departure
-avg_nb_delay_dep <- full_trains_df %>% group_by(year) %>% summarize(average = mean(num_late_at_departure))
+avg_nb_delay_dep <- full_trains_df %>% group_by(year) %>% summarize(departure = mean(num_late_at_departure))
 View(avg_nb_delay_dep)
 
 #average number of train rides delayed at arrival
-avg_nb_delay_arr <- full_trains_df %>% group_by(year) %>% summarize(average = mean(num_arriving_late, na.rm=TRUE))
+avg_nb_delay_arr <- full_trains_df %>% group_by(year) %>% summarize(arrival = mean(num_arriving_late, na.rm=TRUE))
 View(avg_nb_delay_arr)
 
 #total average departure delay time of all trains by year
@@ -80,3 +80,27 @@ ggplot(test_df,aes(x=!!(choice),y=total)) +
   scale_fill_manual(values=c("#56B4E9")) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
+
+ggplot(per_canceled, aes(ymax=percent, ymin=c(0, head(percent, n=-1)), xmax=4, xmin=3, fill=year)) +
+  geom_rect() +
+  coord_polar(theta="y") + # Try to remove that to understand how the chart is built initially
+  xlim(c(2, 4)) # Try to remove that to see how to make a pie chart
+
+
+d <- melt(per_causes, id.vars=c('year'))
+
+ggplot(d, aes(ymax=value, ymin=c(0, head(value, n=-1)), xmax=4, xmin=3, fill=variable)) +
+  geom_rect() +
+  coord_polar(theta="y") + # Try to remove that to understand how the chart is built initially
+  xlim(c(2, 4)) +# Try to remove that to see how to make a pie chart
+  facet_grid(~year)
+
+melt_avg_delay <- melt(cbind(avg_nb_delay_arr,avg_nb_delay_dep), id.vars = c("year"))
+
+ggplot(melt_avg_delay,aes(x=year,y=value, group=variable, color=variable)) +
+  geom_line(size=1.5) +
+  labs(x="Year",y="Average number of delayed train rides") +
+  ggtitle("Average number of delayed train rides by year")
+
+
+test <- full_trains_df %>% filter(departure_station=="PARIS EST")

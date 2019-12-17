@@ -10,7 +10,8 @@
 library(shiny)
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(navbarPage("Data Analytics Project",
+ui <- fluidPage(shinyjs::useShinyjs(),
+                navbarPage("Data Analytics Project",
                            
                            #Documentation tab
                            tabPanel("Documentation",
@@ -41,25 +42,31 @@ ui <- fluidPage(navbarPage("Data Analytics Project",
                                     
                            ),
                            tabPanel("SNCF dashboard",
-                                    
-                                    fluidRow(column(width=2,
-                                                    wellPanel(
-                                                      radioButtons("choice", "Choose feature to aggregate on:",
-                                                                   c("Year" = "year",
-                                                                     "Departure Station" = "departure_station")
-                                                      )
-                                                    )
-                                                ),
-                                             column(width=8,
-                                                    plotOutput('carried_bplot',height=600)
-                                             )
-                                                    
-                                    ),
-                                    
-                  
-                                    fluidRow(column(width=8),
-                                             plotOutput('multiple_bplot',height=600)
+                                    # Sidebar with a slider input for number of bins 
+                                    sidebarLayout(
+                                      sidebarPanel(
+                                        radioButtons("choice", "Choose feature to aggregate on:",
+                                                                 c("Year" = "year",
+                                                                   "All departure Stations" = "departure_station")),
+                                        hr(),
+                                        checkboxInput('is_departure','Select a departure station?',value = TRUE),
+                                        uiOutput("select_departure_ui"),
+                                        
+                                        width=2
+                                      ),
+                                      
+                                      
+                                      # Show a plot of the generated distribution
+                                      mainPanel(
+                                        
+                                          fluidRow(
+                                            splitLayout(cellWidths = c("50%", "50%"), plotOutput("carried_bplot"), plotOutput("canceled_bplot"))
+                                          ),
+                                        plotOutput('delay_bplot'),
+                                        plotOutput('avg_delay_lplot')
+                                      )
                                     )
-                                  )
+                                 
                            )
+              )
 )
