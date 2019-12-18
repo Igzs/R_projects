@@ -124,13 +124,16 @@ flights <- read.csv("datasets/flights.csv", header = TRUE, sep = ",",  stringsAs
 
 library(LaF)
 
-sample_size = 100000
+sample_size = 1000000
 sample1 <- function(file, n) {
   lf <- laf_open(detect_dm_csv(file, sep = ",", header = TRUE, factor_fraction = -1))
   return(read_lines(lf, sample(1:nrow(lf), n)))
 }
 
 test <- sample1("datasets/flights.csv", sample_size)
-  
 
+flights <- read.csv("datasets/flights.csv",stringsAsFactors = FALSE)
+flights.sample <- flights %>% sample_n(sample_size)
 
+write.csv(flights.sample, file ="datasets/flights_sample.csv",na = "",
+          row.names = FALSE)
