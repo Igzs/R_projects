@@ -12,7 +12,12 @@ library(leaflet)
 library(maps)
 library(htmlwidgets) # To save the map as a web page.
 # Define UI for application that draws a histogram
-ui <- fluidPage(shinyjs::useShinyjs(),
+ui <- fluidPage(
+                #load library used for disabling ui inputs
+                shinyjs::useShinyjs(),
+                #
+                tags$style(type="text/css","recalculating {opacity: 1.0;}"),
+                
                 navbarPage("Data Analytics Project",
                            
                            #Documentation tab
@@ -69,23 +74,26 @@ ui <- fluidPage(shinyjs::useShinyjs(),
                                           conditionalPanel('input.display=="overall"',
                                                       fluidRow(
                                                              splitLayout(cellWidths = c("50%", "50%"), 
-                                                                        plotOutput("carried_bplot"), 
-                                                                        plotOutput("canceled_bplot")
+                                                                        plotOutput("carried_bplot",height = 600), 
+                                                                        plotOutput("canceled_bplot",height = 600)
                                                                         ),
-                                                             plotOutput('delay_bplot')
+                                                             splitLayout(cellWidths = c("50%","50%"),
+                                                                         plotOutput('delay_bplot',height = 600),
+                                                                         plotOutput('total_time_bplot',height = 600)
+                                                             )
                                             )
                                           ),
                                         
                                         fluidRow(
                                           conditionalPanel('input.display=="delay"',
-                                                            plotOutput('avg_delay_lplot'), 
-                                                            plotOutput('avg_time_bplot')
+                                                            plotOutput('avg_delay_bplot',height = 600), 
+                                                            plotOutput('avg_time_lplot',height = 600)
                                                             )
                                           
                                         ),
                                         conditionalPanel('input.display == "perc"',
-                                                          plotOutput('per_canceled_plot'),
-                                                          plotOutput('per_causes_bplot')
+                                                          plotOutput('per_canceled_plot',height = 600),
+                                                          plotOutput('per_causes_bplot',height = 600)
                                                           )
                                         
                                         
