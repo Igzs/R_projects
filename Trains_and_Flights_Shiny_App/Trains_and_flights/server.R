@@ -21,7 +21,7 @@ shinyServer(function(input, output,session) {
     colors = c('#D4706A','#7890C2')
     full_trains_df <- read.csv("datasets/full_trains.csv")
     airports <- read.csv("datasets/airports.csv")
-    #flights <- read.csv("datasets/flights.csv")
+    flights <- read.csv("datasets/flights.csv")
 
     output$select_departure_ui <- renderUI({
       selectInput("station", "Departure station : ",  choices=unique(full_trains_df["departure_station"]), 
