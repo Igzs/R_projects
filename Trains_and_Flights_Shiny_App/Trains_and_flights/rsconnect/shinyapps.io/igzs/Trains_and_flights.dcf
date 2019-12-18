@@ -1,0 +1,13 @@
+name: Trains_and_flights
+title: Trains_and_flights
+username:
+account: igzs
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1610399
+bundleId: 2679265
+url: https://igzs.shinyapps.io/Trains_and_flights/
+when: 1576703279.788
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: datasets/regularite-mensuelle-tgv-aqst.csv

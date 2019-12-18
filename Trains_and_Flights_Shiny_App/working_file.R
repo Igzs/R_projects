@@ -51,21 +51,8 @@ per_canceled <- full_trains_df %>%
   mutate(Carried=100 - Canceled) %>%
   select(-c(freq,total))
 View(per_canceled)
-test <- melt(per_canceled,id.vars=c("year"))
 
-ggplot(test, aes(x = "", y = value, fill = variable)) +
-  geom_bar(width = 1, stat = "identity") +
-  geom_text(aes(label=value),color='white',position = position_stack(vjust = 0.5)) + 
-  coord_polar("y", start = 0)+
-  facet_wrap(~ year,  nrow = 2) +
-  ggtitle("Percentage of canceled trains by year") +
-  theme(plot.title = element_text(color="black", size=24,hjust = 0.5),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        panel.grid  = element_blank(),
-        axis.title.x=element_blank(),
-        axis.title.y=element_blank(),
-        strip.text.x = element_text(size = 8, colour = "orange", angle = 90))
+
 #percentage of delay causes
 per_causes <- full_trains_df %>% group_by(year) %>% 
           summarize(external = mean(delay_cause_external_cause, na.rm = TRUE), 
@@ -119,18 +106,31 @@ ggplot(melt_avg_delay,aes(x=year,y=value, group=variable, color=variable)) +
   ggtitle("Average number of delayed train rides by year")
 
 
-test <- full_trains_df %>% filter(departure_station=="PARIS EST")
-journey_time_delay <- full_trains_df %>% 
-  group_by(departure_station) %>% 
-  summarize(journey = mean(journey_time_avg), delay = mean(cbind(avg_delay_late_at_departure , avg_delay_late_on_arrival), na.rm=TRUE)) %>%
-  mutate(total = journey + delay) %>%
-  arrange(desc(delay)) %>%
-  top_n(10)
 
-ggplot(journey_time_delay, aes(x=year,y=journey)) +
-  geom_bar(stat = "identity",width=0.3) +
-  geom_line(aes(x=year,y=delay), size=3, color="dodgerblue")
-  
+flights.sample <- read.csv("datasets/flights.csv",  
+                           stringsAsFactors=FALSE, header=T, nrows=20)  
+
+flights.colclass <- sapply(flights.sample,class)
+
+flights.colclass["CANCELLATION_REASON"] <- "character"
+flights.colclass["AIR_SYSTEM_DELAY"] <- "integer"
+flights.colclass["SECURITY_DELAY"] <- "integer"
+flights.colclass["AIRLINE_DELAY"] <- "integer"
+flights.colclass["LATE_AIRCRAFT_DELAY"] <- "integer"
+flights.colclass["WEATHER_DELAY"] <- "integer"
+
+flights.colclass
+flights <- read.csv("datasets/flights.csv", header = TRUE, sep = ",",  stringsAsFactors = FALSE, nrow = 1000000, colClasses = flights.colclass)
+
+library(LaF)
+
+sample_size = 100000
+sample1 <- function(file, n) {
+  lf <- laf_open(detect_dm_csv(file, sep = ",", header = TRUE, factor_fraction = -1))
+  return(read_lines(lf, sample(1:nrow(lf), n)))
+}
+
+test <- sample1("datasets/flights.csv", sample_size)
   
 
 

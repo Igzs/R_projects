@@ -2,7 +2,7 @@
 .background .reveal .state-background{
   background: #E6F6FF
 }
-</style>
+</style> 
 
 R Project presentation
 ========================================================
@@ -21,6 +21,10 @@ This project is the synthesis of every concept reviewed during this Data Analyti
 - Getting and cleaning data
 - Explore Data
 - Developp Shiny applications
+
+- To learn more, see [our github](https://github.com/Igzs/R_projects/tree/master/Trains_and_Flights_Shiny_App).  
+- You can also test [our application](https://igzs.shinyapps.io/Trains_and_flights/)
+- Link to the [presentation](https://rpubs.com/igz/trains_and_flights)
 
 SNCF Dataset
 ========================================================

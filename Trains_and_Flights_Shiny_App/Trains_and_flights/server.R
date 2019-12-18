@@ -11,17 +11,36 @@ library(shiny)
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(ggthemes)
 library(reshape2)
 library(shinyjs)
 
+
+#function to accelerate the process of loading large datasets
+#returns the correct colnames for the flights csv files
+accelerate_csv <- function(path) {
+  #sample some rows from large dataset
+  flights.sample <- read.csv(path,  
+                             stringsAsFactors=FALSE, header=T, nrows=20)  
+  
+  flights.colclass <- sapply(flights.sample,class)
+  
+  flights.colclass["CANCELLATION_REASON"] <- "character"
+  flights.colclass["AIR_SYSTEM_DELAY"] <- "integer"
+  flights.colclass["SECURITY_DELAY"] <- "integer"
+  flights.colclass["AIRLINE_DELAY"] <- "integer"
+  flights.colclass["LATE_AIRCRAFT_DELAY"] <- "integer"
+  flights.colclass["WEATHER_DELAY"] <- "integer"
+  return(flights.colclass)
+}
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session) {
   colors = c('#D4706A','#7890C2')
   full_trains_df <- read.csv("datasets/full_trains.csv")
   airports <- read.csv("datasets/airports.csv")
-  flights <- read.csv("datasets/flights.csv")
+  
+  flights.colclass <- accelerate_csv("datasets/flights.csv")
+  flights <- read.csv("datasets/flights.csv", header = TRUE, sep = ",",  stringsAsFactors = FALSE, nrow = 1000000, colClasses = flights.colclass)
   
   output$select_departure_ui <- renderUI({
     selectInput("station", "Departure station : ",  choices=unique(full_trains_df["departure_station"]), 

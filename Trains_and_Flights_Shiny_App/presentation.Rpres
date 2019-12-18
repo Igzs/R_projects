@@ -22,6 +22,10 @@ This project is the synthesis of every concept reviewed during this Data Analyti
 - Explore Data
 - Developp Shiny applications
 
+- To learn more, see [our github](https://github.com/Igzs/R_projects/tree/master/Trains_and_Flights_Shiny_App).  
+- You can also test [our application](https://igzs.shinyapps.io/Trains_and_flights/)
+- Link to the [presentation](https://rpubs.com/igz/trains_and_flights)
+
 SNCF Dataset
 ========================================================
 type:background
@@ -36,7 +40,7 @@ Dataset Columns
 ========================================================
 type:background
 ```{r message=FALSE,fig.align="center", warning=FALSE, echo=FALSE}
-full_trains_df <- read.csv("datasets/full_trains.csv")
+full_trains_df <- read.csv("Trains_and_flights/datasets/full_trains.csv")
 colnames(full_trains_df[1:15])
 ```
 
@@ -52,7 +56,7 @@ library(ggthemes)
 library(reshape2)
 
 colors = c('#D4706A','#7890C2')
-full_trains_df <- read.csv("datasets/full_trains.csv")
+full_trains_df <- read.csv("Trains_and_flights/datasets/full_trains.csv")
 
 
 carried_df <- full_trains_df %>% group_by(year)%>%summarize(total = sum(total_num_trips) - sum(num_of_canceled_trains))
@@ -110,8 +114,8 @@ library(scales)
 library(ggthemes)
 library(reshape2)
 
-airports <- read.csv("datasets/airports.csv")
-flights <- read.csv("datasets/flights.csv")
+airports <- read.csv("Trains_and_flights/datasets/airports.csv")
+flights <- read.csv("Trains_and_flights/datasets/flights.csv")
   
 total_delayed <-flights %>% group_by(AIRLINE) %>% filter(DEPARTURE_DELAY != 0||ARRIVAL_DELAY!=0)%>%summarize(Total_delayed = n())
 
