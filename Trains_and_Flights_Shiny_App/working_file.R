@@ -75,13 +75,11 @@ per_causes <- full_trains_df %>% group_by(year) %>%
                     station = mean(delay_cause_station_management, na.rm = TRUE),
                     travelers = mean(delay_cause_travelers, na.rm = TRUE)
             )
-  
-          
+
 View(per_causes)
 
-
-test <- melt(cbind(total_canceled,total_delay_dep,total_delay_arr), id.vars = c("year"))
-
+rearranged_df <- melt(per_causes, id.vars=c('year'))
+rearranged_df["value"] <- mapply(function(x) round(x,4)*100,rearranged_df["value"])
 
 plot <- ggplot(test, aes(x=year,y=value,fill=variable)) + 
   geom_bar(stat="identity", position="dodge") +
@@ -122,3 +120,17 @@ ggplot(melt_avg_delay,aes(x=year,y=value, group=variable, color=variable)) +
 
 
 test <- full_trains_df %>% filter(departure_station=="PARIS EST")
+journey_time_delay <- full_trains_df %>% 
+  group_by(departure_station) %>% 
+  summarize(journey = mean(journey_time_avg), delay = mean(cbind(avg_delay_late_at_departure , avg_delay_late_on_arrival), na.rm=TRUE)) %>%
+  mutate(total = journey + delay) %>%
+  arrange(desc(delay)) %>%
+  top_n(10)
+
+ggplot(journey_time_delay, aes(x=year,y=journey)) +
+  geom_bar(stat = "identity",width=0.3) +
+  geom_line(aes(x=year,y=delay), size=3, color="dodgerblue")
+  
+  
+
+

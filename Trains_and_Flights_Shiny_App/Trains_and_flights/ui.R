@@ -87,7 +87,8 @@ ui <- fluidPage(
                                         fluidRow(
                                           conditionalPanel('input.display=="delay"',
                                                             plotOutput('avg_delay_bplot',height = 600), 
-                                                            plotOutput('avg_time_lplot',height = 600)
+                                                            plotOutput('avg_time_lplot',height = 600),
+                                                            plotOutput('journey_time_delay_plot', height=600)
                                                             )
                                           
                                         ),

@@ -131,7 +131,8 @@ shinyServer(function(input, output,session) {
         theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
               axis.title.x=element_blank(),
               axis.title.y=element_blank(),
-              plot.title = element_text(color="black", size=24,hjust = 0.5)
+              plot.title = element_text(color="black", size=24,hjust = 0.5),
+              legend.title = element_blank()
               )
     })
     
@@ -169,7 +170,8 @@ shinyServer(function(input, output,session) {
         theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
               axis.title.x=element_blank(),
               axis.title.y=element_blank(),
-              plot.title = element_text(color="black", size=24,hjust = 0.5)
+              plot.title = element_text(color="black", size=24,hjust = 0.5),
+              legend.title = element_blank()
         )
       
     })
@@ -216,8 +218,8 @@ shinyServer(function(input, output,session) {
           ggtitle(paste("Average time of delayed train rides by",choice)) +
           theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
                 axis.title.x=element_blank(),
-                axis.title.y=element_blank(),
-                plot.title = element_text(color="black", size=24,hjust = 0.5)
+                plot.title = element_text(color="black", size=24,hjust = 0.5),
+                legend.title = element_blank()
           )
         
       }
@@ -228,7 +230,8 @@ shinyServer(function(input, output,session) {
           scale_color_manual(values=colors) +
           labs(x="Year", y="Time (min)") +
           ggtitle("Average time of delayed train rides by year") +
-          theme(plot.title = element_text(color="black", size=24,hjust = 0.5))
+          theme(plot.title = element_text(color="black", size=24,hjust = 0.5),
+                legend.title = element_blank())
       }
     })
     
@@ -265,10 +268,30 @@ shinyServer(function(input, output,session) {
         theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
               axis.title.x=element_blank(),
               axis.title.y=element_blank(),
-              plot.title = element_text(color="black", size=24,hjust = 0.5)
+              plot.title = element_text(color="black", size=24,hjust = 0.5),
+              legend.title = element_blank()
         )
       
       
+    })
+    
+    output$journey_time_delay_plot <- renderPlot({
+
+      journey_time_delay <- full_trains_df %>% 
+        group_by(departure_station) %>% 
+        summarize(journey = mean(journey_time_avg), delay = mean(cbind(avg_delay_late_at_departure , avg_delay_late_on_arrival), na.rm=TRUE)) %>%
+        mutate(total = journey + delay) %>%
+        arrange(desc(delay)) %>%
+        top_n(10)
+
+      ggplot(journey_time_delay, aes(x=reorder(departure_station,desc(delay)),y=delay)) +
+        geom_bar(stat = "identity",width=0.3, fill=colors[2]) +
+        labs(y="Average delay time (min)") +
+        ggtitle("Top 10 most delayed departure stations") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
+              axis.title.x=element_blank(),
+              plot.title = element_text(color="black", size=24,hjust = 0.5)
+        )
     })
     
     output$per_canceled_plot<- renderPlot({
@@ -308,7 +331,8 @@ shinyServer(function(input, output,session) {
                 axis.ticks = element_blank(),
                 panel.grid  = element_blank(),
                 axis.title.x=element_blank(),
-                axis.title.y=element_blank())
+                axis.title.y=element_blank(),
+                legend.title = element_blank())
       }else{
         ggplot(combined_df, aes(x=!!(choice),y=value,fill=variable)) + 
           geom_bar(stat="identity", width=0.5,position="stack") +
@@ -317,7 +341,8 @@ shinyServer(function(input, output,session) {
           ggtitle(paste("Percentage of canceled trains by departure station")) +
           theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
                 axis.title.y=element_blank(),
-                plot.title = element_text(color="black", size=24,hjust = 0.5)
+                plot.title = element_text(color="black", size=24,hjust = 0.5),
+                legend.title = element_blank()
           )
       }
       
@@ -350,9 +375,12 @@ shinyServer(function(input, output,session) {
               )
       }
       rearranged_df <- melt(per_causes, id.vars=c(choice))
+      rearranged_df["value"] <- mapply(function(x) round(x,4)*100,rearranged_df["value"])
+      
       
       ggplot(rearranged_df, aes(x=!!(choice),y=value,fill=variable)) + 
         geom_bar(stat="identity", width=0.5,position="stack") +
+        geom_text(aes(label = value), color="white", position = position_stack(vjust = 0.5), size = 4) +
         scale_y_continuous(labels = comma) +
         ggtitle(paste("Percentage of delay causes by",choice)) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
