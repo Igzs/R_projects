@@ -16,6 +16,7 @@ library(reshape2)
 library(shinyjs)
 
 
+
 theme_set(theme_minimal())
 
 # Define server logic required to draw a histogram
@@ -226,7 +227,7 @@ shinyServer(function(input, output,session) {
       
     })
     
-    output$per_canceled_dchart <- renderPlot({
+    output$per_canceled_plot<- renderPlot({
       choice <- sym(input$choice)
       if(input$is_departure){
         #percentage of cancelled trains
@@ -235,14 +236,25 @@ shinyServer(function(input, output,session) {
         #percentage of cancelled trains
         per_canceled <- full_trains_df %>% group_by(!!(choice)) %>% summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% mutate(percent = freq/total)
       }
+      if(choice=="year"){
+        ggplot(per_canceled, aes(ymax=percent, ymin=c(0, head(percent, n=-1)), xmax=4, xmin=3, fill=!!(choice))) +
+          geom_rect() +
+          coord_polar(theta="y") +
+          xlim(c(2, 4)) +
+          labs(x="Year", y="Percentage") +
+          ggtitle("Percentage of canceled trains by year") +
+          theme(plot.title = element_text(color="black", size=24,hjust = 0.5))
+      }else{
+        ggplot(per_canceled, aes(x=!!(choice),y=percent,fill=!!(choice))) + 
+          geom_bar(stat="identity", width=0.5,position="stack") +
+          scale_y_continuous(labels = comma) +
+          ggtitle(paste("Percentage of canceled trains by departure station")) +
+          theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
+                axis.title.y=element_blank(),
+                plot.title = element_text(color="black", size=24,hjust = 0.5)
+          )
+      }
       
-      ggplot(per_canceled, aes(ymax=percent, ymin=c(0, head(percent, n=-1)), xmax=4, xmin=3, fill=year)) +
-        geom_rect() +
-        coord_polar(theta="y") +
-        xlim(c(2, 4)) +
-        labs(x="Year", y="Percentage") +
-        ggtitle("Percentage of canceled trains by year") +
-        theme(plot.title = element_text(color="black", size=24,hjust = 0.5))
       
       
     })
@@ -278,7 +290,6 @@ shinyServer(function(input, output,session) {
         scale_y_continuous(labels = comma) +
         ggtitle(paste("Percentage of delay causes by ",choice)) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
-              axis.title.x=element_blank(),
               axis.title.y=element_blank(),
               plot.title = element_text(color="black", size=24,hjust = 0.5)
         )
@@ -327,10 +338,14 @@ shinyServer(function(input, output,session) {
       flights_choice = sym(input$flights_choice)
       # generate bins based on input$bins from ui.R
       if (input$flights_choice == "AIRLINE") {
-        total_delayed <- flights %>% group_by(AIRLINE) %>% filter(DEPARTURE_DELAY != 0 || ARRIVAL_DELAY != 0) %>% summarize(Total_delayed = n())
+        total_delayed <-
+          flights %>% group_by(AIRLINE) %>% filter(DEPARTURE_DELAY != 0 ||
+                                                     ARRIVAL_DELAY != 0) %>% summarize(Total_delayed = n())
       }
       else{
-        total_delayed <- flights %>% group_by(ORIGIN_AIRPORT) %>% filter(DEPARTURE_DELAY != 0 || ARRIVAL_DELAY != 0) %>% summarize(Total_delayed = n())
+        total_delayed <-
+          flights %>% group_by(ORIGIN_AIRPORT) %>% filter(DEPARTURE_DELAY != 0 ||
+                                                            ARRIVAL_DELAY != 0) %>% summarize(Total_delayed = n())
       }
       ggplot(total_delayed, aes(x = !!(flights_choice), y = Total_delayed)) +
         geom_bar(stat = "identity",
@@ -338,7 +353,7 @@ shinyServer(function(input, output,session) {
                  fill = "dodgerblue") +
         scale_y_continuous(labels = comma) +
         scale_fill_manual(values = c("#56B4E9")) +
-        ggtitle(paste("Total number of flights cancelled by", input$flights_choice)) +
+        ggtitle(paste("Total number of flights delayed by", input$flights_choice)) +
         theme(
           axis.text.x = element_text(
             angle = 45,
@@ -354,6 +369,233 @@ shinyServer(function(input, output,session) {
           )
         )
       
+    })
+    
+    output$avg_dur_flights_plot <- renderPlot({
+      flights_choice = sym(input$flights_choice)
+      # generate bins based on input$bins from ui.R
+      if (input$flights_choice == "AIRLINE") {
+        avg_duration <-
+          flights %>% group_by(AIRLINE) %>% summarise(Average_duration = mean(ELAPSED_TIME, na.rm = TRUE))
+      }
+      else{
+        avg_duration <-
+          flights %>% group_by(ORIGIN_AIRPORT) %>% summarise(Average_duration = mean(ELAPSED_TIME, na.rm = TRUE))
+      }
+      ggplot(avg_duration, aes(x = !!(flights_choice), y = Average_duration)) +
+        geom_bar(stat = "identity",
+                 width = 0.5,
+                 fill = "dodgerblue") +
+        scale_y_continuous(labels = comma) +
+        scale_fill_manual(values = c("#56B4E9")) +
+        ggtitle(paste("Average flight duration by", input$flights_choice)) +
+        theme(
+          axis.text.x = element_text(
+            angle = 45,
+            hjust = 1,
+            size = 10
+          ),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          plot.title = element_text(
+            color = "black",
+            size = 24,
+            hjust = 0.5
+          )
+        )
+      
+    })
+    
+    output$avg_dist_flights_plot <- renderPlot({
+      flights_choice = sym(input$flights_choice)
+      # generate bins based on input$bins from ui.R
+      if (input$flights_choice == "AIRLINE") {
+        avg_distance <-
+          flights %>% group_by(AIRLINE) %>% summarise(Average_distance = mean(DISTANCE, na.rm = TRUE))
+      }
+      else{
+        avg_distance <-
+          flights %>% group_by(ORIGIN_AIRPORT) %>% summarise(Average_distance = mean(DISTANCE, na.rm = TRUE))
+      }
+      ggplot(avg_distance, aes(x = !!(flights_choice), y = Average_distance)) +
+        geom_bar(stat = "identity",
+                 width = 0.5,
+                 fill = "dodgerblue") +
+        scale_y_continuous(labels = comma) +
+        scale_fill_manual(values = c("#56B4E9")) +
+        ggtitle(paste("Average flight distance by", input$flights_choice)) +
+        theme(
+          axis.text.x = element_text(
+            angle = 45,
+            hjust = 1,
+            size = 10
+          ),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          plot.title = element_text(
+            color = "black",
+            size = 24,
+            hjust = 0.5
+          )
+        )
+      
+    })
+    
+    output$avg_dur_flights_plot <- renderPlot({
+      flights_choice = sym(input$flights_choice)
+      # generate bins based on input$bins from ui.R
+      if (input$flights_choice == "AIRLINE") {
+        avg_duration <-
+          flights %>% group_by(AIRLINE) %>% summarise(Average_duration = mean(ELAPSED_TIME, na.rm = TRUE))
+      }
+      else{
+        avg_duration <-
+          flights %>% group_by(ORIGIN_AIRPORT) %>% summarise(Average_duration = mean(ELAPSED_TIME, na.rm = TRUE))
+      }
+      ggplot(avg_duration, aes(x = !!(flights_choice), y = Average_duration)) +
+        geom_bar(stat = "identity",
+                 width = 0.5,
+                 fill = "dodgerblue") +
+        scale_y_continuous(labels = comma) +
+        scale_fill_manual(values = c("#56B4E9")) +
+        ggtitle(paste("Average flight duration by", input$flights_choice)) +
+        theme(
+          axis.text.x = element_text(
+            angle = 45,
+            hjust = 1,
+            size = 10
+          ),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          plot.title = element_text(
+            color = "black",
+            size = 24,
+            hjust = 0.5
+          )
+        )
+      
+    })
+    
+    output$tot_dist_flights_plot <- renderPlot({
+      flights_choice = sym(input$flights_choice)
+      # generate bins based on input$bins from ui.R
+      if (input$flights_choice == "AIRLINE") {
+        total_distance <-
+          flights %>% group_by(AIRLINE) %>% summarise(Total_distance = sum(DISTANCE))
+      }
+      else{
+        total_distance <-
+          flights %>% group_by(ORIGIN_AIRPORT) %>% summarise(Total_distance = sum(DISTANCE))
+      }
+      ggplot(total_distance, aes(x = !!(flights_choice), y = Total_distance)) +
+        geom_bar(stat = "identity",
+                 width = 0.5,
+                 fill = "dodgerblue") +
+        scale_y_continuous(labels = comma) +
+        scale_fill_manual(values = c("#56B4E9")) +
+        ggtitle(paste("Total flight distance by", input$flights_choice)) +
+        theme(
+          axis.text.x = element_text(
+            angle = 45,
+            hjust = 1,
+            size = 10
+          ),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          plot.title = element_text(
+            color = "black",
+            size = 24,
+            hjust = 0.5
+          )
+        )
+      
+    })
+    
+    output$avg_dep_del_flights_plot <- renderPlot({
+      flights_choice = sym(input$flights_choice)
+      # generate bins based on input$bins from ui.R
+      if (input$flights_choice == "AIRLINE") {
+        avg_dep_delay <-
+          flights %>% group_by(AIRLINE) %>% summarise(Average_departure_delay = mean(DEPARTURE_DELAY, na.rm = TRUE))
+      }
+      else{
+        avg_dep_delay <-
+          flights %>% group_by(ORIGIN_AIRPORT) %>% summarise(Average_departure_delay = mean(DEPARTURE_DELAY, na.rm = TRUE))
+      }
+      ggplot(avg_dep_delay, aes(x = !!(flights_choice), y = Average_departure_delay)) +
+        geom_bar(stat = "identity",
+                 width = 0.5,
+                 fill = "dodgerblue") +
+        scale_y_continuous(labels = comma) +
+        scale_fill_manual(values = c("#56B4E9")) +
+        ggtitle(paste("Average flight departure delay by", input$flights_choice)) +
+        theme(
+          axis.text.x = element_text(
+            angle = 45,
+            hjust = 1,
+            size = 10
+          ),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          plot.title = element_text(
+            color = "black",
+            size = 24,
+            hjust = 0.5
+          )
+        )
+      
+    })
+    
+    output$del_ar_del_flights_plot <- renderPlot({
+      flights_choice = sym(input$flights_choice)
+      # generate bins based on input$bins from ui.R
+      if (input$flights_choice == "AIRLINE") {
+        avg_arr_delay <-
+          flights %>% group_by(AIRLINE) %>% summarise(Average_arrival_delay = mean(ARRIVAL_DELAY, na.rm = TRUE))
+      }
+      else{
+        avg_arr_delay <-
+          flights %>% group_by(ORIGIN_AIRPORT) %>% summarise(Average_arrival_delay = mean(ARRIVAL_DELAY, na.rm = TRUE))
+      }
+      ggplot(avg_arr_delay, aes(x = !!(flights_choice), y = Average_arrival_delay)) +
+        geom_bar(stat = "identity",
+                 width = 0.5,
+                 fill = "dodgerblue") +
+        scale_y_continuous(labels = comma) +
+        scale_fill_manual(values = c("#56B4E9")) +
+        ggtitle(paste("Average flight arrival delay by", input$flights_choice)) +
+        theme(
+          axis.text.x = element_text(
+            angle = 45,
+            hjust = 1,
+            size = 10
+          ),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          plot.title = element_text(
+            color = "black",
+            size = 24,
+            hjust = 0.5
+          )
+        )
+      
+    })
+    
+    output$airports_map <- renderLeaflet({
+      map <- leaflet(data = airports) %>%
+        addProviderTiles("CartoDB.Positron", group = "Map") %>%
+        addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+        addProviderTiles("Esri.WorldShadedRelief", group = "Relief") %>%
+        addMarkers( ~ LONGITUDE,
+                    ~ LATITUDE,
+                    label = ~ AIRPORT,
+                    group = "airports") %>%
+        addScaleBar(position = "bottomleft") %>%
+        addLayersControl(
+          baseGroups = c("Map", "Satellite", "Relief"),
+          overlayGroups = c("airports", "flights"),
+          options = layersControlOptions(collapsed = FALSE)
+        )
     })
     
     

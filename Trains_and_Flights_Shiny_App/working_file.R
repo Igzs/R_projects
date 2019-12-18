@@ -44,9 +44,14 @@ total_canceled <- full_trains_df %>% group_by(year) %>% summarize(total_canceled
 View(total_canceled)
 
 #percentage of cancelled trains
-per_canceled <- full_trains_df %>% group_by(year) %>% summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% mutate(percent = freq/total)
+per_canceled <- full_trains_df %>% 
+  group_by(year) %>% 
+  summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% 
+  mutate(Canceled = freq/total) %>% 
+  mutate(Carriedl=1 - percent) %>%
+  filter(!grepl('freq', variable) & !grepl('total',variable))
 View(per_canceled)
-
+test <- melt(per_canceled,id.vars=c("year"))
 #percentage of delay causes
 per_causes <- full_trains_df %>% group_by(year) %>% 
           summarize(external = mean(delay_cause_external_cause, na.rm = TRUE), 

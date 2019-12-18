@@ -8,7 +8,9 @@
 #
 
 library(shiny)
-
+library(leaflet)
+library(maps)
+library(htmlwidgets) # To save the map as a web page.
 # Define UI for application that draws a histogram
 ui <- fluidPage(shinyjs::useShinyjs(),
                 navbarPage("Data Analytics Project",
@@ -82,7 +84,7 @@ ui <- fluidPage(shinyjs::useShinyjs(),
                                           
                                         ),
                                         conditionalPanel('input.display == "perc"',
-                                                          plotOutput('per_canceled_dchart'),
+                                                          plotOutput('per_canceled_plot'),
                                                           plotOutput('per_causes_bplot')
                                                           )
                                         
@@ -108,11 +110,17 @@ ui <- fluidPage(shinyjs::useShinyjs(),
                                       # Show a plot of the generated distribution
                                       mainPanel(
                                         plotOutput('nb_flights_plot'),
-                                        plotOutput('del_flights_plot')
-                                        
+                                        plotOutput('del_flights_plot'),
+                                        plotOutput('avg_dur_flights_plot'),
+                                        plotOutput('avg_dist_flights_plot'),
+                                        plotOutput('tot_dist_flights_plot'),
+                                        plotOutput('avg_dep_del_flights_plot'),
+                                        plotOutput('del_ar_del_flights_plot'),
+                                        leafletOutput('airports_map')
                                       )
                                     ))
-              )
+                )
+              
 )
 
 
