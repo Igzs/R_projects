@@ -1,0 +1,178 @@
+<style>
+.background .reveal .state-background{
+  background: #E6F6FF
+}
+</style> 
+
+R Project presentation
+========================================================
+author: Igor Fidalgo, Arthur Laureau, Ruben Poretz
+date: 19/12/2019
+autosize: true
+font-family: 'Roboto'
+
+
+Goal of the project
+========================================================
+type: background
+<p class=e> The goal of this project is to construct dashboards displaying information about SNCF rail trafic and US flights. 
+This project is the synthesis of every concept reviewed during this Data Analytics course:</p>
+
+- Getting and cleaning data
+- Explore Data
+- Developp Shiny applications
+
+SNCF Dataset
+========================================================
+type:background
+The dataset associated contains aggregated information about rail trafic accross 4 years.At issue is whether the data show signs of improvement or degradation of the state of french rail trafic. 
+
+- We only used the full_trains dataset
+- There were 5462 observations accross 59 train stations.
+
+At issue is whether the data show signs of improvement or degradation of the state of french rail trafic. 
+
+Dataset Columns
+========================================================
+type:background
+```{r message=FALSE,fig.align="center", warning=FALSE, echo=FALSE}
+full_trains_df <- read.csv("datasets/full_trains.csv")
+colnames(full_trains_df[1:15])
+```
+
+Some Graphs of the SNCF dashboard
+========================================================
+class:title
+type:background
+```{r,out.width=800, out.height=800, fig.align="left",echo=FALSE}
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(ggthemes)
+library(reshape2)
+
+colors = c('#D4706A','#7890C2')
+full_trains_df <- read.csv("datasets/full_trains.csv")
+
+
+carried_df <- full_trains_df %>% group_by(year)%>%summarize(total = sum(total_num_trips) - sum(num_of_canceled_trains))
+
+carried_plot <- ggplot(carried_df,aes(x=year,y=total),fill=year) +
+      geom_bar(stat="identity",width = 0.3,fill=colors[2]) +
+      scale_y_continuous(labels = comma) +
+      ggtitle(paste("Total number of carried train rides by year")) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
+            axis.title.x=element_blank(),
+            axis.title.y=element_blank(),
+            plot.title = element_text(color="black", size=24,hjust = 0.5)
+      )
+    
+
+total_canceled <- full_trains_df %>% group_by(year) %>% summarize(total_canceled =sum(num_of_canceled_trains))
+canceled_plot <- ggplot(total_canceled, aes(x=year,y=total_canceled)) + 
+      geom_bar(stat="identity", width=0.3, fill = colors[1]) +
+      scale_y_continuous(labels = comma) +
+      ggtitle(paste("Total number of canceled train rides by year")) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1, size=10),
+            axis.title.x=element_blank(),
+            axis.title.y=element_blank(),
+            plot.title = element_text(color="black", size=24,hjust = 0.5)
+      )
+```
+
+```{r,out.width=800, out.height=800, fig.align="left",echo=FALSE}
+canceled_plot
+
+```
+***
+```{r,out.width=800, out.height=800, fig.align="right",echo=FALSE}
+carried_plot
+```
+
+US Flights dataset
+========================================================
+type:background
+Three datasets were used to construct this dashboard: 
+ - Airlines: Maps IATA flight codes to a specific airline.
+ - Airports: Maps IATA flight codes to airports geographical information
+ - Flights: Contains an overview of all the information about the flights
+
+The combination of these datasets allows us to have an overview of the state of US air trafic 
+Comparisons can be drawn between the two dashboards to reveal interesting results
+
+Canceled and delayed flights per airline
+========================================================
+type:background
+```{r,out.width=500, out.height=500, fig.align="right",echo=FALSE}
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(ggthemes)
+library(reshape2)
+
+airports <- read.csv("datasets/airports.csv")
+flights <- read.csv("datasets/flights.csv")
+  
+total_delayed <-flights %>% group_by(AIRLINE) %>% filter(DEPARTURE_DELAY != 0||ARRIVAL_DELAY!=0)%>%summarize(Total_delayed = n())
+
+delayed_plot <- ggplot(total_delayed, aes(x = AIRLINE, y = Total_delayed)) +
+      geom_bar(stat = "identity",
+               width = 0.5,
+               fill = "dodgerblue") +
+      scale_y_continuous(labels = comma) +
+      scale_fill_manual(values = c("#56B4E9")) +
+      ggtitle(paste("Total number of flights delayed by airline")) +
+      theme(
+        axis.text.x = element_text(
+          angle = 45,
+          hjust = 1,
+          size = 10
+        ),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        plot.title = element_text(
+          color = "black",
+          size = 24,
+          hjust = 0.5
+        )
+      )
+
+total_flights <- flights %>% group_by(AIRLINE) %>% summarise(total = n() - sum(CANCELLED))
+canceled_plot <- ggplot(total_flights, aes(x = AIRLINE, y = total)) +
+      geom_bar(stat = "identity",
+               width = 0.5,
+               fill = "dodgerblue") +
+      scale_y_continuous(labels = comma) +
+      scale_fill_manual(values = c("#56B4E9")) +
+      ggtitle(paste("Total number of flights cancelled by airline")) +
+      theme(
+        axis.text.x = element_text(
+          angle = 45,
+          hjust = 1,
+          size = 10
+        ),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        plot.title = element_text(
+          color = "black",
+          size = 24,
+          hjust = 0.5
+        )
+      )
+```
+
+```{r,out.width=500, out.height=500, fig.align="left",echo=FALSE}
+delayed_plot
+```
+***
+```{r,out.width=500, out.height=500, fig.align="right",echo=FALSE}
+canceled_plot
+```
+
+Map of airports
+========================================================
+type:background
+
+<div style="width:1000px;height:1000px;align="middle"">
+<img src="map.png"></img>
+</div>
