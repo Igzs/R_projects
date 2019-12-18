@@ -47,11 +47,25 @@ View(total_canceled)
 per_canceled <- full_trains_df %>% 
   group_by(year) %>% 
   summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% 
-  mutate(Canceled = freq/total) %>% 
-  mutate(Carriedl=1 - percent) %>%
-  filter(!grepl('freq', variable) & !grepl('total',variable))
+  mutate(Canceled = round((freq/total)*100,3)) %>% 
+  mutate(Carried=100 - Canceled) %>%
+  select(-c(freq,total))
 View(per_canceled)
 test <- melt(per_canceled,id.vars=c("year"))
+
+ggplot(test, aes(x = "", y = value, fill = variable)) +
+  geom_bar(width = 1, stat = "identity") +
+  geom_text(aes(label=value),color='white',position = position_stack(vjust = 0.5)) + 
+  coord_polar("y", start = 0)+
+  facet_wrap(~ year,  nrow = 2) +
+  ggtitle("Percentage of canceled trains by year") +
+  theme(plot.title = element_text(color="black", size=24,hjust = 0.5),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid  = element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        strip.text.x = element_text(size = 8, colour = "orange", angle = 90))
 #percentage of delay causes
 per_causes <- full_trains_df %>% group_by(year) %>% 
           summarize(external = mean(delay_cause_external_cause, na.rm = TRUE), 

@@ -17,6 +17,7 @@ library(shinyjs)
 
 
 
+
 theme_set(theme_minimal())
 
 # Define server logic required to draw a histogram
@@ -57,11 +58,6 @@ shinyServer(function(input, output,session) {
       }
     })
     
-    
-    #disable year select input based on checkbox input
-    observeEvent(input$is_year, {
-        shinyjs::enable("select_year_ui")
-    })
     
     
     output$carried_bplot <- renderPlot({
@@ -231,21 +227,41 @@ shinyServer(function(input, output,session) {
       choice <- sym(input$choice)
       if(input$is_departure){
         #percentage of cancelled trains
-        per_canceled <- full_trains_df %>% group_by(!!(choice)) %>% filter(departure_station==input$station) %>% summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% mutate(percent = freq/total)
+        per_canceled <- full_trains_df %>% 
+          group_by(!!(choice)) %>% 
+          filter(departure_station==input$station) %>%
+          summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% 
+          mutate(Canceled = round((freq/total)*100,3)) %>% 
+          mutate(Carried=100 - Canceled) %>%
+          select(-c(freq,total))
+        
       }else{
         #percentage of cancelled trains
-        per_canceled <- full_trains_df %>% group_by(!!(choice)) %>% summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% mutate(percent = freq/total)
-      }
+        per_canceled <- full_trains_df %>% 
+          group_by(!!(choice)) %>% 
+          summarize(freq = sum(num_of_canceled_trains), total = sum(total_num_trips)) %>% 
+          mutate(Canceled = round((freq/total)*100,3)) %>% 
+          mutate(Carried=100 - Canceled) %>%
+          select(-c(freq,total))      
+        }
+      
+      combined_df <- melt(per_canceled,id.vars=c(choice))
+      
       if(choice=="year"){
-        ggplot(per_canceled, aes(ymax=percent, ymin=c(0, head(percent, n=-1)), xmax=4, xmin=3, fill=!!(choice))) +
-          geom_rect() +
-          coord_polar(theta="y") +
-          xlim(c(2, 4)) +
-          labs(x="Year", y="Percentage") +
+        ggplot(combined_df, aes(x = "", y = value, fill = variable)) +
+          geom_bar(width = 1, stat = "identity") +
+          geom_text(aes(label=value),color='white',position = position_stack(vjust = 0.5)) + 
+          coord_polar("y", start = 0)+
+          facet_grid(.~year) +
           ggtitle("Percentage of canceled trains by year") +
-          theme(plot.title = element_text(color="black", size=24,hjust = 0.5))
+          theme(plot.title = element_text(color="black", size=24,hjust = 0.5),
+                axis.text = element_blank(),
+                axis.ticks = element_blank(),
+                panel.grid  = element_blank(),
+                axis.title.x=element_blank(),
+                axis.title.y=element_blank())
       }else{
-        ggplot(per_canceled, aes(x=!!(choice),y=percent,fill=!!(choice))) + 
+        ggplot(combined_df, aes(x=!!(choice),y=value,fill=variable)) + 
           geom_bar(stat="identity", width=0.5,position="stack") +
           scale_y_continuous(labels = comma) +
           ggtitle(paste("Percentage of canceled trains by departure station")) +
