@@ -82,7 +82,7 @@ shinyServer(function(input, output,session) {
   })
   
   output$station_text <- renderText({
-    paste("SNCF dahsboard about",input$station," for all years")
+    paste("SNCF dashboard about",input$station," for all years")
   })
   
   # barplot showing the carried train rides

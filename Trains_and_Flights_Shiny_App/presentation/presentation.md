@@ -88,3 +88,10 @@ type:background
 <div style="width:1000px;height:1000px;align="middle"">
 <img src="map.png"></img>
 </div>
+
+Results
+========================================================
+Trains
+* Large increase of canceled and delayed train rides in 2018, may be explained by increased trouble in rolling stocks and traffic, which are the cause of 42% of delays this year.
+* Steady number of carried train rides throughout the years
+* Large national departure stations such as PARIS EST and MARNE LA VALLEE have the highest number of delayed train rides, but the International lines are most impacted by delay times. 

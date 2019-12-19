@@ -40,7 +40,7 @@ Dataset Columns
 ========================================================
 type:background
 ```{r message=FALSE,fig.align="center", warning=FALSE, echo=FALSE}
-full_trains_df <- read.csv("Trains_and_flights/datasets/full_trains.csv")
+full_trains_df <- read.csv("../Trains_and_flights/datasets/full_trains.csv")
 colnames(full_trains_df[1:15])
 ```
 
@@ -52,11 +52,10 @@ type:background
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(ggthemes)
 library(reshape2)
 
 colors = c('#D4706A','#7890C2')
-full_trains_df <- read.csv("Trains_and_flights/datasets/full_trains.csv")
+#full_trains_df <- read.csv("../Trains_and_flights/datasets/full_trains.csv")
 
 
 carried_df <- full_trains_df %>% group_by(year)%>%summarize(total = sum(total_num_trips) - sum(num_of_canceled_trains))
@@ -111,11 +110,10 @@ type:background
 library(dplyr)
 library(ggplot2)
 library(scales)
-library(ggthemes)
 library(reshape2)
 
-airports <- read.csv("Trains_and_flights/datasets/airports.csv")
-flights <- read.csv("Trains_and_flights/datasets/flights.csv")
+airports <- read.csv("../Trains_and_flights/datasets/airports.csv")
+flights <- read.csv("../Trains_and_flights/datasets/flights.csv")
   
 total_delayed <-flights %>% group_by(AIRLINE) %>% filter(DEPARTURE_DELAY != 0||ARRIVAL_DELAY!=0)%>%summarize(Total_delayed = n())
 
@@ -180,3 +178,10 @@ type:background
 <div style="width:1000px;height:1000px;align="middle"">
 <img src="map.png"></img>
 </div>
+
+Results
+========================================================
+Trains
+* Large increase of canceled and delayed train rides in 2018, may be explained by increased trouble in rolling stocks and traffic, which are the cause of 42% of delays this year.
+* Steady number of carried train rides throughout the years
+* Large national departure stations such as PARIS EST and MARNE LA VALLEE have the highest number of delayed train rides, but the International lines are most impacted by delay times. 
