@@ -1,3 +1,5 @@
+## This file was used to test the different queries and functions used in the project
+
 full_trains_df <- read.csv("datasets/full_trains.csv")
 regularite_df <- read.csv("datasets/regularite-mensuelle-tgv-aqst.csv",sep=";")
 flights <- read.csv('datasets/flights.csv')
@@ -106,34 +108,3 @@ ggplot(melt_avg_delay,aes(x=year,y=value, group=variable, color=variable)) +
   ggtitle("Average number of delayed train rides by year")
 
 
-
-flights.sample <- read.csv("datasets/flights.csv",  
-                           stringsAsFactors=FALSE, header=T, nrows=20)  
-
-flights.colclass <- sapply(flights.sample,class)
-
-flights.colclass["CANCELLATION_REASON"] <- "character"
-flights.colclass["AIR_SYSTEM_DELAY"] <- "integer"
-flights.colclass["SECURITY_DELAY"] <- "integer"
-flights.colclass["AIRLINE_DELAY"] <- "integer"
-flights.colclass["LATE_AIRCRAFT_DELAY"] <- "integer"
-flights.colclass["WEATHER_DELAY"] <- "integer"
-
-flights.colclass
-flights <- read.csv("datasets/flights.csv", header = TRUE, sep = ",",  stringsAsFactors = FALSE, nrow = 1000000, colClasses = flights.colclass)
-
-library(LaF)
-
-sample_size = 1000000
-sample1 <- function(file, n) {
-  lf <- laf_open(detect_dm_csv(file, sep = ",", header = TRUE, factor_fraction = -1))
-  return(read_lines(lf, sample(1:nrow(lf), n)))
-}
-
-test <- sample1("datasets/flights.csv", sample_size)
-
-flights <- read.csv("datasets/flights.csv",stringsAsFactors = FALSE)
-flights.sample <- flights %>% sample_n(sample_size)
-
-write.csv(flights.sample, file ="datasets/flights_sample.csv",na = "",
-          row.names = FALSE)

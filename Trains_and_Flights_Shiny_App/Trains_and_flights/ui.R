@@ -29,7 +29,8 @@ ui <- fluidPage(
                         "This project is the synthesis of every concept reviewed during this Data Analytics course."), 
                       h2("How to use this shiny application:"),
                       p("Navigate through the application using the navigation bar.",br(),
-                        "Interact with the different visualizations using the graphical interface."),
+                        "Interact with the different visualizations using the graphical interface.",br(),
+                        "In the SNCF dashboard, you can aggregate by year or all departure stations. You can finely tune the aggregation by year by selecting the checkbox and selecting a departure station."),
                       h2("About the datasets:"),
                       h3("SNCF rail trafic details"),
                       p("The dataset associated contains aggregated information about rail trafic accross 4 years ",br(),
@@ -69,7 +70,9 @@ ui <- fluidPage(
                         
                         # Show a plot of the generated distribution
                         mainPanel(
-                          
+                          conditionalPanel('input.choice=="year" & input.is_departure==0',titlePanel("SNCF dashboard for all years")),
+                          conditionalPanel('input.choice=="departure_station"',titlePanel("SNCF dashboard for all departure stations")),
+                          conditionalPanel('input.is_departure==1',titlePanel(textOutput("station_text"))),
                           
                           conditionalPanel('input.display=="overall"',
                                            fluidRow(

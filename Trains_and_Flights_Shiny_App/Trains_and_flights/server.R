@@ -15,8 +15,10 @@ library(reshape2)
 library(shinyjs)
 
 
-#function to accelerate the process of loading large datasets
-#returns the correct colnames for the flights csv files
+# function to accelerate the process of loading large datasets
+# returns the correct colnames for the flights csv files
+# Makes read_csv function faster to compute
+
 accelerate_csv <- function(path) {
   #sample some rows from large dataset
   flights.sample <- read.csv(path,  
@@ -33,15 +35,20 @@ accelerate_csv <- function(path) {
   return(flights.colclass)
 }
 
-# Define server logic required to draw a histogram
+# Define server logic
 shinyServer(function(input, output,session) {
+  #define colorscheme used in the project
   colors = c('#D4706A','#7890C2')
+  # load the full trains data file
   full_trains_df <- read.csv("datasets/full_trains.csv")
+  # load the airports data file
   airports <- read.csv("datasets/airports.csv")
-  
-  flights.colclass <- accelerate_csv("datasets/flights.csv")
+  # get the correct column names of the flights datasets
+  flights.colclass <- accelerate_csv("datasets/flights_sample.csv")
+  # read the sample of the flights dataset
   flights <- read.csv("datasets/flights_sample.csv", header = TRUE, sep = ",",  stringsAsFactors = FALSE, colClasses = flights.colclass)
   
+  # reactive input based on departure station found in the full trains dataframe
   output$select_departure_ui <- renderUI({
     selectInput("station", "Departure station : ",  choices=unique(full_trains_df["departure_station"]), 
                 selected="")
@@ -74,8 +81,11 @@ shinyServer(function(input, output,session) {
     }
   })
   
+  output$station_text <- renderText({
+    paste("SNCF dahsboard about",input$station," for all years")
+  })
   
-  
+  # barplot showing the carried train rides
   output$carried_bplot <- renderPlot({
     choice = sym(input$choice)
     
@@ -98,6 +108,7 @@ shinyServer(function(input, output,session) {
     
   })
   
+  # barplot showing the canceled train rides
   output$canceled_bplot <- renderPlot({
     #total number of canceled trains
     choice = sym(input$choice)
@@ -120,6 +131,7 @@ shinyServer(function(input, output,session) {
       )
   })
   
+  # barplot showing the number of delayed train rides
   output$delay_bplot <- renderPlot({
     choice = sym(input$choice)
     
@@ -155,6 +167,7 @@ shinyServer(function(input, output,session) {
       )
   })
   
+  # barplot showing the total average delay times for delayed train rides
   output$total_time_bplot <- renderPlot({
     choice = sym(input$choice)
     
@@ -195,6 +208,7 @@ shinyServer(function(input, output,session) {
     
   })
   
+  # line plot showing the average delay times for delayed train rides
   output$avg_time_lplot <- renderPlot({
     choice = sym(input$choice)
     if(input$is_departure){
@@ -254,6 +268,7 @@ shinyServer(function(input, output,session) {
     }
   })
   
+  # barplot showing the average number of delayed train rides
   output$avg_delay_bplot <- renderPlot({
     choice = sym(input$choice)
     
@@ -294,6 +309,7 @@ shinyServer(function(input, output,session) {
     
   })
   
+  # barplot showing the top 10 most delayed stations overall
   output$journey_time_delay_plot <- renderPlot({
     
     journey_time_delay <- full_trains_df %>% 
@@ -313,6 +329,7 @@ shinyServer(function(input, output,session) {
       )
   })
   
+  # pie charts and stacked barplot showing the percentage of canceled train rides
   output$per_canceled_plot<- renderPlot({
     choice <- sym(input$choice)
     if(input$is_departure){
@@ -369,6 +386,7 @@ shinyServer(function(input, output,session) {
     
   })
   
+  # stacked barplot showing the percentages of delay causes
   output$per_causes_bplot <- renderPlot({
     choice <- sym(input$choice)
     
