@@ -1,0 +1,13 @@
+name: Trains_and_flights
+title: Trains_and_flights
+username:
+account: igzs
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1611271
+bundleId: 2680502
+url: https://igzs.shinyapps.io/Trains_and_flights/
+when: 1576748160.91267
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: datasets/flights.csv
